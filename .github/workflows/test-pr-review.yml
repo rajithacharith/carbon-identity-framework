@@ -2,13 +2,15 @@ name: Trigger on PR Open
 on:
   pull_request:
     types: [opened]
+
 jobs:
   example_job:
     runs-on: ubuntu-latest
     steps:
       - name: Example step
         run: echo "Pull request opened!"
+
       - name: Print PR Link
-        run: echo "Pull Request Link: $PR_URL"
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
+        run: echo "Pull Request Link: $PR_URL"
