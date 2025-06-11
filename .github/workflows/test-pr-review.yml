@@ -1,7 +1,8 @@
 name: Trigger on PR Open
 on:
   pull_request:
-    types: [opened]
+    types:
+      - synchronize
 
 jobs:
   example_job:
