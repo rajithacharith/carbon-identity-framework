@@ -13,4 +13,4 @@ jobs:
       - name: Print PR Link
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
-        run: echo "Pull Request Link: $PR_URL"
+        run: echo "$PR_URL"
