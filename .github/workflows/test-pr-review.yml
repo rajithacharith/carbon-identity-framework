@@ -16,5 +16,5 @@ jobs:
         run: |
           curl --location "$REVIEW_ENDPOINT" \
             --header 'Content-Type: application/json' \
-            --header "x-api-key: $API_KEY" \
+            --header "api-key: $API_KEY" \
             --data '{"prUrl": "${{ github.event.pull_request.html_url }}"}'
