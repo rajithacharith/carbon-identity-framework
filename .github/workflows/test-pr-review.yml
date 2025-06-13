@@ -1,17 +1,20 @@
-name: Trigger on PR Open
+name: PR Review Caller
+
 on:
   pull_request:
-    types:
-      - synchronize
+    types: [opened, synchronize]
 
 jobs:
-  example_job:
+  call-external-endpoint:
     runs-on: ubuntu-latest
-    steps:
-      - name: Example step
-        run: echo "Pull requestdasd opened!"
+    env:
+      REVIEW_ENDPOINT: ${{ secrets.REVIEW_ENDPOINT }}
+      API_KEY: ${{ secrets.API_KEY }}
 
-      - name: Print PR Link
-        env:
-          PR_URL: ${{ github.event.pull_request.html_url }}
-        run: echo "$PR_URL"
+    steps:
+      - name: Call Review Endpoint
+        run: |
+          curl --location "$REVIEW_ENDPOINT" \
+            --header 'Content-Type: application/json' \
+            --header "x-api-key: $API_KEY" \
+            --data '{"prUrl": "${{ github.event.pull_request.html_url }}"}'
