@@ -15,6 +15,7 @@
   "data_storage_type.certificate_validation": "database",
   "data_storage_type.admin_advisory_banner": "database",
   "data_storage_type.remote_logging_config": "database",
+  "data_storage_type.challenge_questions": "database",
   "database.identity_db.pool_options.maxActive": "50",
   "database.identity_db.pool_options.maxWait": "60000",
   "database.identity_db.pool_options.testOnBorrow": "true",
@@ -62,6 +63,12 @@
   "remote_fetch.enable": false,
   "remote_fetch.working_directory": "${carbon.home}/tmp/",
 
+  "oauth.custom_token_validator": [
+    {
+      "type": "dpop",
+      "class": "org.wso2.carbon.identity.oauth2.dpop.validators.DPoPTokenValidator"
+    }
+  ],
   "oauth.token_cleanup.enable": true,
   "oauth.token_cleanup.retain_access_tokens_for_auditing": false,
 
@@ -584,6 +591,10 @@
   "event.default_listener.application_authentication.enable": true,
   "event.default_listener.mutual_tls_authenticator.priority": "919",
   "event.default_listener.mutual_tls_authenticator.enable": true,
+  "event.default_listener.dpop.priority": "13",
+  "event.default_listener.dpop.enable": true,
+  "event.default_listener.dpop.property.header_validity_period": "3000",
+  "event.default_listener.dpop.property.skip_dpop_validation_in_revoke": true,
   "event.default_listener.private_key_jwt_authenticator.priority": "899",
   "event.default_listener.private_key_jwt_authenticator.enable": true,
   "event.default_listener.private_key_jwt_authenticator.property.prevent_token_reuse": false,
@@ -1236,8 +1247,7 @@
   "console.account_login.scopes.update": ["internal_config_mgt_update"],
   "console.actions.enabled": true,
   "console.actions.disabled_features": [
-    "actions.types.list.preRegistration",
-    "actions.types.preUpdateProfile.edit.rule"
+    "actions.types.list.preRegistration"
   ],
   "console.actions.scopes.feature": ["console:actions"],
   "console.actions.scopes.create": ["internal_action_mgt_create"],
@@ -1249,6 +1259,16 @@
   ],
   "console.actions.scopes.update": ["internal_action_mgt_update"],
   "console.actions.scopes.delete": ["internal_action_mgt_delete"],
+  "console.webhooks.enabled": false,
+  "console.webhooks.disabled_features": [],
+  "console.webhooks.scopes.feature": ["console:webhooks"],
+  "console.webhooks.scopes.create": ["internal_webhook_mgt_create"],
+  "console.webhooks.scopes.read": [
+    "internal_webhook_mgt_view",
+    "internal_webhook_meta_view"
+  ],
+  "console.webhooks.scopes.update": ["internal_webhook_mgt_update"],
+  "console.webhooks.scopes.delete": ["internal_webhook_mgt_delete"],
   "console.administrators.enabled": false,
   "console.administrators.scopes.feature": [],
   "console.administrators.scopes.create": [],
@@ -1284,7 +1304,8 @@
   "console.applications.scopes.update": ["internal_application_mgt_update"],
   "console.applications.scopes.delete": ["internal_application_mgt_delete"],
   "console.applications.disabled_features": [
-    "applications.loginFlow.legacyEditor"
+    "applications.loginFlow.legacyEditor",
+    "applications.sharedAccess.status"
   ],
   "console.applications.ui.certificate_alias_enabled": false,
   "console.application_roles.enabled": false,
@@ -1294,6 +1315,12 @@
   "console.approvals.scopes.read": ["internal_humantask_view"],
   "console.approvals.scopes.update": ["internal_humantask_view"],
   "console.approvals.scopes.delete": ["internal_humantask_view"],
+  "console.workflows.enabled": false,
+  "console.workflows.scopes.feature": ["console:workflowApprovals"],
+  "console.workflows.scopes.create": ["internal_workflow_create", "internal_workflow_association_create"],
+  "console.workflows.scopes.read": ["internal_workflow_view", "internal_workflow_association_view"],
+  "console.workflows.scopes.update": ["internal_workflow_update", "internal_workflow_association_update"],
+  "console.workflows.scopes.delete": ["internal_workflow_delete", "internal_workflow_association_delete"],
   "console.attribute_dialects.enabled": true,
   "console.attribute_dialects.scopes.feature": ["console:attributes"],
   "console.attribute_dialects.scopes.create": ["internal_claim_meta_create"],
@@ -1667,7 +1694,7 @@
   "myaccount.ui.app_white_logo_path": "/assets/images/branding/logo-inverted.svg",
   "myaccount.ui.is_header_avatar_label_allowed": true,
   "myaccount.ui.product_name": "WSO2 Identity Server",
-  "myaccount.theme": "default",
+  "myaccount.theme": "wso2is",
   "myaccount.product_version.configs.versionOverride": "",
   "myaccount.authenticator_app_configs.enabled": true,
   "myaccount.applications.enabled": true,
@@ -1696,8 +1723,10 @@
     "openid"
   ],
   "myaccount.impersonation.allowed_resources": [
+    "/api/server/v1/identity-governance/preferences",
     "/api/server/v1/branding-preference",
     "/scim2/Schemas",
+    "/scim2/Me",
     "/api/users/v1/me/associations",
     "/api/users/v1/me/applications"
   ],
@@ -1792,10 +1821,12 @@
 
   "oauth.authorize_all_scopes": false,
   "oauth.enable_rich_authorization_requests" : true,
-  "oauth.enable_user_session_impersonation": false,
+  "oauth.enable_user_session_impersonation": true,
 
   "system_applications.system_portals": ["Console", "My Account"],
 
-  "notification_templates.sms_templates.apply": true
+  "notification_templates.sms_templates.apply": true,
+
+  "attribute.return_previous_additional_properties.enabled": false
 }
 

@@ -50,6 +50,17 @@ public class IdentityEventConstants {
 
         public static final String PRE_AUTHENTICATION = "PRE_AUTHENTICATION";
         public static final String POST_AUTHENTICATION = "POST_AUTHENTICATION";
+        public static final String AUTHENTICATION_STEP_SUCCESS = "AUTHENTICATION_STEP_SUCCESS";
+        public static final String AUTHENTICATION_STEP_FAILURE = "AUTHENTICATION_STEP_FAILURE";
+        public static final String AUTHENTICATION_SUCCESS = "AUTHENTICATION_SUCCESS";
+        public static final String AUTHENTICATION_FAILURE = "AUTHENTICATION_FAILURE";
+        public static final String SESSION_CREATE = "SESSION_CREATE";
+        public static final String SESSION_UPDATE = "SESSION_UPDATE";
+        public static final String SESSION_TERMINATE = "SESSION_TERMINATE";
+        public static final String SESSION_EXPIRE = "SESSION_EXPIRE";
+        public static final String SESSION_EXTEND = "SESSION_EXTEND";
+        public static final String VERIFICATION = "VERIFICATION";
+        public static final String USER_SESSION_TERMINATE = "USER_SESSION_TERMINATE";
         public static final String PRE_SET_USER_CLAIMS = "PRE_SET_USER_CLAIMS";
         public static final String POST_SET_USER_CLAIMS = "POST_SET_USER_CLAIMS";
         public static final String PRE_ADD_USER= "PRE_ADD_USER";
@@ -328,7 +339,9 @@ public class IdentityEventConstants {
         SESSION_UPDATE,
         SESSION_TERMINATE,
         SESSION_EXPIRE,
-        SESSION_EXTEND
+        SESSION_EXTEND,
+        VERIFICATION,
+        USER_SESSION_TERMINATE
     }
 
     public class EventProperty {
@@ -383,6 +396,7 @@ public class IdentityEventConstants {
                 "GET_USER_RECOVERY_DATA_SCENARIO_WITH_CODE_EXPIRY_VALIDATION";
         public static final String GET_USER_RECOVERY_DATA_SCENARIO_WITHOUT_CODE_EXPIRY_VALIDATION =
                 "GET_USER_RECOVERY_DATA_SCENARIO_WITHOUT_CODE_EXPIRY_VALIDATION";
+        public static final String INITIATOR_TYPE = "INITIATOR_TYPE";
 
         public static final String REQUEST = "request";
         public static final String USER_ID = "USER_ID";
@@ -443,6 +457,7 @@ public class IdentityEventConstants {
 
         public static final String UPDATED_CLAIM_MAPPINGS = "updatedClaimMappings";
         public static final String REQUIRED_ATTRIBUTES = "requiredAttributes";
+        public static final String SKIP_LOCAL_USER_CLAIM_UPDATE = "skipLocalUserClaimUpdate";
 
         // API Resource and Application Authorized API related event properties.
         public static final String API_RESOURCE = "API_RESOURCE";

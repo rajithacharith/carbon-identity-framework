@@ -21,6 +21,9 @@ package org.wso2.carbon.identity.application.mgt;
 import org.wso2.carbon.utils.CarbonUtils;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import static org.wso2.carbon.identity.application.common.util.IdentityApplicationConstants.Error.INVALID_FILTER;
 import static org.wso2.carbon.identity.application.common.util.IdentityApplicationConstants.Error.INVALID_REQUEST;
@@ -110,6 +113,9 @@ public class ApplicationConstants {
     public static final String FILTER_CO = "co";
     public static final int MAX_NUMBER_OF_GROUPS_FROM_META_ENDPOINT = 100;
 
+    // Fallback super tenant domain.
+    public static final String SUPER_TENANT = "carbon.super";
+
     // System application config elements
     public static final String SYSTEM_APPLICATIONS_CONFIG_ELEMENT = "SystemApplications";
     public static final String DEFAULT_APPLICATIONS_CONFIG_ELEMENT = "DefaultApplications";
@@ -141,6 +147,14 @@ public class ApplicationConstants {
     public static final String RBAC = "RBAC";
     public static final String SYSTEM_PORTALS = "SystemPortals";
     public static final String IMPERSONATE_SCOPE_NAME = "internal_user_impersonate";
+    public static final String IMPERSONATE_ORG_SCOPE_NAME = "internal_org_user_impersonate";
+    public static final List<String> DEFAULT_BLOCKED_SCOPES = Collections.unmodifiableList(Arrays.asList(
+            IMPERSONATE_SCOPE_NAME, IMPERSONATE_ORG_SCOPE_NAME));
+    public static final String IMPERSONATE_ROLE_NAME = "Impersonator";
+    public static final String IMPERSONATION_API_RESOURCE = "system:impersonation";
+    public static final String APPLICATION_ROLE_AUDIENCE = "application";
+    public static final String USER_SESSION_IMPERSONATION_ENABLED = "OAuth.UserSessionImpersonation";
+
     /**
      * Group the constants related to logs.
      */
