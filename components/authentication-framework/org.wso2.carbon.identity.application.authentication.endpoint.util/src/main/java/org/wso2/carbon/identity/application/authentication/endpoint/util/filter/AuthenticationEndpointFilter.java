@@ -181,7 +181,7 @@ public class AuthenticationEndpointFilter implements Filter {
             if (SAMLSSO.equals(protocolType)) {
                 loadPage = URI_SAMLSSO_LOGIN;
             } else if (OPENID.equals(protocolType)) {
-                loadPage = URI_OPENID_LOGIN;
+log.info("Forwarding request to login page: " + loadPage);
             } else if (PASSIVESTS.equals(protocolType)) {
                 loadPage = URI_PASSIVESTS_LOGIN;
             } else if (OAUTH2.equals(protocolType) || OIDC.equals(protocolType)) {
