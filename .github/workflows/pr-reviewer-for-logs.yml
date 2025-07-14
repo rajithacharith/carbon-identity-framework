@@ -6,7 +6,7 @@ on:
 
 jobs:
   call-template:
-    uses: wso2/wso2-organization-templates/.github/workflows/pr-reviewer.yml@main
+    uses: rajithacharith/wso2-organization-templates/.github/workflows/pr-reviewer.yml@main
     with:
       reviewEndpoint: ${{ vars.AI_LOG_AGENT_REVIEW_ENDPOINT }}
       tokenUrl: ${{ vars.AI_LOG_AGENT_TOKEN_URL }}
