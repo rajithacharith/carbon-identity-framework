@@ -159,6 +159,20 @@ public class ClaimAdminService {
         handler.addNewClaimMapping(claimMapping);
     }
 
+    public void addNewClaimMapping(ClaimMappingDTO claimMappingDTO) throws ClaimManagementException {
+        /*Convert the simple structure of ClaimMapping received, to the complex structure
+        of ClaimMapping which is used in the back end. */
+        ClaimMapping claimMapping = convertClaimMappingDTOToClaimMapping(claimMappingDTO);
+        ClaimManagerHandler handler = ClaimManagerHandler.getInstance();
+        ClaimMapping currentMapping = handler.getClaimMapping(
+                claimMapping.getClaim().getClaimUri());
+        if (currentMapping != null) {
+            throw new ClaimManagementException(
+                    "Duplicate claim exist in the system. Please pick a different Claim Uri");
+        }
+        handler.addNewClaimMapping(claimMapping);
+    }
+
     /**
      * @param dialectUri
      * @param claimUri
