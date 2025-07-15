@@ -3,11 +3,13 @@ name: Notify Merged PR to AI Log Agent
 on:
   push:
     branches:
-      - m2-pipeline
+      - master
 
 jobs:
   find-pr-details:
     runs-on: ubuntu-latest
+    outputs:
+      url: ${{ steps.pr.outputs.url }}
     steps:
       - name: Get merged PR info
         id: pr
@@ -36,16 +38,9 @@ jobs:
 
             core.info(`Found merged PR: ${mergedPr.html_url} (#${mergedPr.number})`);
             core.setOutput("url", mergedPr.html_url);
-            core.setOutput("number", mergedPr.number);
-
   invoke-ai-log-agent:
     name: Invoke AI Log Agent
     needs: find-pr-details
-    uses: rajithacharith/wso2-organization-templates/.github/workflows/pr-reviewer.yml@main
+    uses: rajithacharith/wso2-organization-templates/.github/workflows/log-pr-comment-analyzer.yml@main
     with:
-      reviewEndpoint: ${{ vars.AI_LOG_AGENT_ANALYZE_ENDPOINT }}
-      tokenUrl: ${{ vars.AI_LOG_AGENT_TOKEN_URL }}
       prUrl: ${{ needs.find-pr-details.outputs.url }}
-    secrets:
-      clientId: ${{ secrets.AI_LOG_AGENT_CLIENT_ID }}
-      clientSecret: ${{ secrets.AI_LOG_AGENT_CLIENT_SECRET }}
