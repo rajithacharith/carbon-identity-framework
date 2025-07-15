@@ -1,4 +1,4 @@
-name: Curl on PR Merge
+name: Notify Merged PR to AI Log Agent
 
 on:
   push:
