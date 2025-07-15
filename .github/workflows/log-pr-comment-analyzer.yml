@@ -3,7 +3,7 @@ name: Curl on PR Merge
 on:
   push:
     branches:
-      - main
+      - m2-pipeline
 
 jobs:
   find-pr-details:
