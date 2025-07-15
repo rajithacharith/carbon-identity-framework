@@ -3,7 +3,7 @@ name: Notify Merged PR to AI Log Agent
 on:
   push:
     branches:
-      - master
+      - m2-pipeline
 
 jobs:
   find-pr-details:
@@ -44,3 +44,6 @@ jobs:
     uses: rajithacharith/wso2-organization-templates/.github/workflows/log-pr-comment-analyzer.yml@main
     with:
       prUrl: ${{ needs.find-pr-details.outputs.url }}
+    secrets:
+      clientId: ${{ secrets.AI_LOG_AGENT_CLIENT_ID }}
+      clientSecret: ${{ secrets.AI_LOG_AGENT_CLIENT_SECRET }}
