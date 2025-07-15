@@ -34,6 +34,7 @@ jobs:
               return;
             }
 
+            core.info(`Found merged PR: ${mergedPr.html_url} (#${mergedPr.number})`);
             core.setOutput("url", mergedPr.html_url);
             core.setOutput("number", mergedPr.number);
 
