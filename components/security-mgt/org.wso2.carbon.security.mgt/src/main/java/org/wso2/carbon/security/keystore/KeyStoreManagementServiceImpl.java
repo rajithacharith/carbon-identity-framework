@@ -17,6 +17,8 @@
 package org.wso2.carbon.security.keystore;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.CarbonException;
 import org.wso2.carbon.base.MultitenantConstants;
 import org.wso2.carbon.base.ServerConfiguration;
@@ -68,21 +70,38 @@ import static org.wso2.carbon.security.SecurityConstants.KeyStoreMgtConstants.SE
  */
 public class KeyStoreManagementServiceImpl implements KeyStoreManagementService {
 
+    private static final Log log = LogFactory.getLog(KeyStoreManagementServiceImpl.class);
+
     @Override
     public List<String> getKeyStoreCertificateAliases(String tenantDomain, String filter)
             throws KeyStoreManagementException {
 
+        if (log.isDebugEnabled()) {
+            log.debug("Retrieving keystore certificate aliases for tenant: " + tenantDomain + 
+                    ", filter: " + filter);
+        }
         KeyStoreData keyStoreInfo = getKeystoreData(tenantDomain, getKeyStoreName(tenantDomain));
-        return filterAlias(getAliasList(keyStoreInfo), filter);
+        List<String> aliases = filterAlias(getAliasList(keyStoreInfo), filter);
+        if (log.isDebugEnabled()) {
+            log.debug("Found " + aliases.size() + " certificate aliases for tenant: " + tenantDomain);
+        }
+        return aliases;
     }
 
     @Override
     public Map<String, X509Certificate> getPublicCertificate(String tenantDomain) throws KeyStoreManagementException {
 
+        if (log.isDebugEnabled()) {
+            log.debug("Retrieving public certificate for tenant: " + tenantDomain);
+        }
         Map<String, X509Certificate> certData = new HashMap<>();
         KeyStoreData keyStoreInfo = getKeystoreData(tenantDomain, getKeyStoreName(tenantDomain));
         CertData key = keyStoreInfo.getKey();
         certData.put(key.getAlias(), ((CertDataDetail) key).getCertificate());
+        if (log.isDebugEnabled()) {
+            log.debug("Retrieved public certificate with alias: " + key.getAlias() + 
+                    " for tenant: " + tenantDomain);
+        }
         return certData;
     }
 
@@ -90,6 +109,9 @@ public class KeyStoreManagementServiceImpl implements KeyStoreManagementService 
     public X509Certificate getKeyStoreCertificate(String tenantDomain, String alias)
             throws KeyStoreManagementException {
 
+        if (log.isDebugEnabled()) {
+            log.debug("Retrieving certificate with alias: " + alias + " for tenant: " + tenantDomain);
+        }
         if (StringUtils.isEmpty(alias)) {
             throw handleClientException(ERROR_CODE_EMPTY_ALIAS, null);
         }
@@ -148,6 +170,9 @@ public class KeyStoreManagementServiceImpl implements KeyStoreManagementService 
     public void addCertificate(String tenantDomain, String alias, String certificate)
             throws KeyStoreManagementException {
 
+        if (log.isDebugEnabled()) {
+            log.debug("Adding certificate with alias: " + alias + " for tenant: " + tenantDomain);
+        }
         KeyStoreAdmin keyStoreAdmin = getKeyStoreAdmin(tenantDomain);
         String keyStoreName = getKeyStoreName(tenantDomain);
         X509Certificate cert;
@@ -167,13 +192,23 @@ public class KeyStoreManagementServiceImpl implements KeyStoreManagementService 
             throw handleServerException(ERROR_CODE_VALIDATE_CERTIFICATE, null, e);
         }
         if (isAliasExists) {
+            if (log.isWarnEnabled()) {
+                log.warn("Certificate alias already exists: " + alias + " for tenant: " + tenantDomain);
+            }
             throw handleClientException(ERROR_CODE_ALIAS_EXISTS, alias);
         }
         if (certAlias != null) {
+            if (log.isWarnEnabled()) {
+                log.warn("Certificate already exists with alias: " + certAlias + " for tenant: " + tenantDomain);
+            }
             throw handleClientException(ERROR_CODE_CERTIFICATE_EXISTS, certAlias);
         }
         try {
             keyStoreAdmin.importCertToStore(alias, certificate, keyStoreName);
+            if (log.isInfoEnabled()) {
+                log.info("Certificate with alias '" + alias + "' added successfully to keystore '" + 
+                        keyStoreName + "' for tenant: " + tenantDomain);
+            }
         } catch (SecurityConfigException e) {
             throw handleServerException(ERROR_CODE_ADD_CERTIFICATE, alias, e);
         }
@@ -182,12 +217,22 @@ public class KeyStoreManagementServiceImpl implements KeyStoreManagementService 
     @Override
     public void deleteCertificate(String tenantDomain, String alias) throws KeyStoreManagementException {
 
+        if (log.isDebugEnabled()) {
+            log.debug("Deleting certificate with alias: " + alias + " for tenant: " + tenantDomain);
+        }
         try {
             Map<String, X509Certificate> publicCertificate = getPublicCertificate(tenantDomain);
             if (publicCertificate.keySet().contains(alias)) {
+                if (log.isWarnEnabled()) {
+                    log.warn("Cannot delete tenant certificate with alias: " + alias + " for tenant: " + tenantDomain);
+                }
                 throw handleClientException(ERROR_CODE_CANNOT_DELETE_TENANT_CERT, alias);
             }
             getKeyStoreAdmin(tenantDomain).removeCertFromStore(alias, getKeyStoreName(tenantDomain));
+            if (log.isInfoEnabled()) {
+                log.info("Certificate with alias '" + alias + "' deleted successfully from keystore for tenant: " + 
+                        tenantDomain);
+            }
         } catch (SecurityConfigException e) {
             throw handleServerException(ERROR_CODE_DELETE_CERTIFICATE, alias, e);
         }
@@ -258,6 +303,9 @@ public class KeyStoreManagementServiceImpl implements KeyStoreManagementService 
 
     private List<String> filterAlias(List<String> aliases, String filter) throws KeyStoreManagementException {
 
+        if (log.isDebugEnabled()) {
+            log.debug("Filtering aliases with filter: " + filter + ", initial count: " + aliases.size());
+        }
         if (filter != null) {
             filter = filter.replace(" ", "+");
             String[] extractedFilter = filter.split("[+]");
@@ -284,6 +332,9 @@ public class KeyStoreManagementServiceImpl implements KeyStoreManagementService 
             } else {
                 throw handleClientException(ERROR_CODE_BAD_VALUE_FOR_FILTER, filter);
             }
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("Filtered aliases count: " + aliases.size());
         }
         return aliases;
     }
