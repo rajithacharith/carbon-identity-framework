@@ -101,20 +101,37 @@ public class IdentityKeyStoreGeneratorImpl implements IdentityKeyStoreGenerator 
     public void generateKeyStore(String tenantDomain, String context) throws KeyStoreManagementException {
 
         int tenantId = IdentityTenantUtil.getTenantId(tenantDomain);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Generating keystore for tenant: " + tenantDomain + ", context: " + context + 
+                    ", tenant ID: " + tenantId);
+        }
         KeyStoreManager keyStoreManager = KeyStoreManager.getInstance(tenantId);
 
         try {
             IdentityTenantUtil.initializeRegistry(tenantId);
             if (isContextKeyStoreExists(context, tenantDomain, keyStoreManager)) {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Context keystore already exists for tenant: " + tenantDomain + ", context: " + context);
+                }
                 return; // KeyStore already exists, no need to create again
             }
             // Create the KeyStore
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Creating new keystore for tenant: " + tenantDomain + ", context: " + context);
+            }
             String password = generatePassword();
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Generated password for keystore (length: " + password.length() + ") for tenant: " + 
+                        tenantDomain);
+            }
             KeyStore keyStore = KeystoreUtils.getKeystoreInstance(
                     KeystoreUtils.getKeyStoreFileType(tenantDomain));
             keyStore.load(null, password.toCharArray());
             generateContextKeyPair(keyStore, context, tenantDomain, password);
             persistContextKeyStore(keyStore, context, tenantDomain, password, keyStoreManager);
+            if (LOG.isInfoEnabled()) {
+                LOG.info("Context keystore generated successfully for tenant: " + tenantDomain + ", context: " + context);
+            }
         } catch (Exception e) {
             String msg = "Error while instantiating a keystore";
             throw new KeyStoreManagementException(msg, e);
@@ -133,8 +150,9 @@ public class IdentityKeyStoreGeneratorImpl implements IdentityKeyStoreGenerator 
             if (e.getMessage() != null && e.getMessage().contains("Key Store with a name: " + keyStoreName
                     + " does not exist.")) {
 
-                String msg = "Key store not exits. Proceeding to create keystore : " + keyStoreName;
-                LOG.debug(msg + e.getMessage());
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Key store not exists. Proceeding to create keystore: " + keyStoreName);
+                }
             } else {
                 String msg = "Error while checking the existence of keystore.";
                 throw new KeyStoreManagementException(msg, e);
@@ -177,6 +195,9 @@ public class IdentityKeyStoreGeneratorImpl implements IdentityKeyStoreGenerator 
                                         KeyStoreManager keyStoreManager) throws KeyStoreManagementException {
 
         String keyStoreName = generateContextKSNameFromDomainName(context, tenantDomain);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Persisting context keystore with name: " + keyStoreName + " for tenant: " + tenantDomain);
+        }
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         char[] passwordChar = password.toCharArray();
         try {
@@ -193,10 +214,16 @@ public class IdentityKeyStoreGeneratorImpl implements IdentityKeyStoreGenerator 
 
             keyStoreManager.addKeyStore(outputStream.toByteArray(), keyStoreName,
                     passwordChar, " ", KeystoreUtils.getKeyStoreFileType(tenantDomain), passwordChar);
+            if (LOG.isInfoEnabled()) {
+                LOG.info("Context keystore persisted successfully with name: " + keyStoreName + " for tenant: " + 
+                        tenantDomain);
+            }
         } catch (SecurityException e) {
             if (e.getMessage() != null && e.getMessage().contains("Key store " + keyStoreName + " already available")) {
 
-                LOG.warn("Key store " + keyStoreName + " is already available, ignoring.");
+                if (LOG.isWarnEnabled()) {
+                    LOG.warn("Key store " + keyStoreName + " is already available, ignoring.");
+                }
             } else {
 
                 String msg = "Error when adding a keyStore";
@@ -217,12 +244,18 @@ public class IdentityKeyStoreGeneratorImpl implements IdentityKeyStoreGenerator 
     private void generateContextKeyPair(KeyStore keyStore, String context, String tenantDomain, String password)
             throws KeyStoreManagementException {
 
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Generating keypair for tenant: " + tenantDomain + ", context: " + context);
+        }
         try {
             CryptoUtil.getDefaultCryptoUtil();
             // Generate key pair
             KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
             keyPairGenerator.initialize(2048);
             KeyPair keyPair = keyPairGenerator.generateKeyPair();
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("RSA keypair generated successfully for tenant: " + tenantDomain);
+            }
 
             // Common Name and alias for the generated certificate
             String commonName = "CN=" + buildDomainWithContext(tenantDomain, context)
@@ -247,6 +280,9 @@ public class IdentityKeyStoreGeneratorImpl implements IdentityKeyStoreGenerator 
             );
 
             String algorithmName = getSignatureAlgorithm();
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Using signature algorithm: " + algorithmName + " for tenant: " + tenantDomain);
+            }
             JcaContentSignerBuilder signerBuilder =
                     new JcaContentSignerBuilder(algorithmName).setProvider(getJCEProvider());
             PrivateKey privateKey = keyPair.getPrivate();
@@ -257,6 +293,10 @@ public class IdentityKeyStoreGeneratorImpl implements IdentityKeyStoreGenerator 
             keyStore.setKeyEntry(buildDomainWithContext(tenantDomain, context),
                     keyPair.getPrivate(), password.toCharArray(),
                     new java.security.cert.Certificate[]{x509Cert});
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Certificate and private key added to keystore for tenant: " + tenantDomain + 
+                        ", context: " + context);
+            }
         } catch (Exception ex) {
             String msg = "Error while generating the Context certificate for tenant :" +
                     tenantDomain + ".";
@@ -307,6 +347,9 @@ public class IdentityKeyStoreGeneratorImpl implements IdentityKeyStoreGenerator 
     private String buildDomainWithContext(String ksName, String context) throws KeyStoreManagementException {
 
         if (ksName == null || context == null) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Invalid parameters: ksName=" + ksName + ", context=" + context);
+            }
             throw new KeyStoreManagementException("ksName and context must not be null");
         }
         return ksName + KEY_STORE_CONTEXT_SEPARATOR + context;

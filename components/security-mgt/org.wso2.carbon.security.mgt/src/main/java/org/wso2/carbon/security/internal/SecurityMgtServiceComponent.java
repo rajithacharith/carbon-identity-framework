@@ -61,10 +61,21 @@ public class SecurityMgtServiceComponent {
             BundleContext bundleCtx = ctxt.getBundleContext();
             bundleCtx.registerService(KeyStoreManagementService.class.getName(), new KeyStoreManagementServiceImpl(),
                     null);
+            if (log.isInfoEnabled()) {
+                log.info("KeyStoreManagementService registered successfully");
+            }
             bundleCtx.registerService(IdentityKeyStoreGenerator.class.getName(), new IdentityKeyStoreGeneratorImpl(),
                     null);
+            if (log.isInfoEnabled()) {
+                log.info("IdentityKeyStoreGenerator registered successfully");
+            }
 
-            log.debug("Security Mgt bundle is activated");
+            if (log.isDebugEnabled()) {
+                log.debug("Security Mgt bundle is activated");
+            }
+            if (log.isInfoEnabled()) {
+                log.info("Security management component activated successfully");
+            }
         } catch (Throwable e) {
             log.error("Failed to activate SecurityMgtServiceComponent", e);
         }
@@ -72,7 +83,12 @@ public class SecurityMgtServiceComponent {
 
     @Deactivate
     protected void deactivate(ComponentContext ctxt) {
-        log.debug("Security Mgt bundle is deactivated");
+        if (log.isDebugEnabled()) {
+            log.debug("Security Mgt bundle is deactivated");
+        }
+        if (log.isInfoEnabled()) {
+            log.info("Security management component deactivated successfully");
+        }
     }
 
     @Reference(
@@ -88,6 +104,9 @@ public class SecurityMgtServiceComponent {
         }
         configContextService = contextService;
         SecurityServiceHolder.setConfigurationContextService(contextService);
+        if (log.isInfoEnabled()) {
+            log.info("ConfigurationContextService set successfully");
+        }
     }
 
     @Reference(
@@ -103,6 +122,9 @@ public class SecurityMgtServiceComponent {
         }
         this.registryService = registryService;
         SecurityServiceHolder.setRegistryService(registryService);
+        if (log.isInfoEnabled()) {
+            log.info("RegistryService set successfully");
+        }
     }
 
     @Reference(
@@ -118,6 +140,9 @@ public class SecurityMgtServiceComponent {
         }
         this.realmService = realmService;
         SecurityServiceHolder.setRealmService(realmService);
+        if (log.isInfoEnabled()) {
+            log.info("RealmService set successfully");
+        }
     }
 
     protected void unsetRealmService(RealmService realmService) {
@@ -126,6 +151,9 @@ public class SecurityMgtServiceComponent {
         }
         this.realmService = null;
         SecurityServiceHolder.setRealmService(null);
+        if (log.isWarnEnabled()) {
+            log.warn("RealmService unset - service may be unavailable");
+        }
     }
 
     protected void unsetConfigurationContextService(ConfigurationContextService contextService) {
@@ -134,6 +162,9 @@ public class SecurityMgtServiceComponent {
         }
         this.configContextService = null;
         SecurityServiceHolder.setConfigurationContextService(contextService);
+        if (log.isWarnEnabled()) {
+            log.warn("ConfigurationContextService unset - service may be unavailable");
+        }
     }
 
     protected void unsetRegistryService(RegistryService registryService) {
@@ -142,6 +173,9 @@ public class SecurityMgtServiceComponent {
         }
         this.registryService = registryService;
         SecurityServiceHolder.setRegistryService(registryService);  // TODO: Serious OSGi bug here. FIXME Thilina
+        if (log.isWarnEnabled()) {
+            log.warn("RegistryService unset - service may be unavailable");
+        }
     }
 
     @Reference(

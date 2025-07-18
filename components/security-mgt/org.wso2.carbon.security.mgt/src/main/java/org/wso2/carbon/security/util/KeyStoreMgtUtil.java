@@ -48,15 +48,24 @@ public class KeyStoreMgtUtil {
      */
     public static String dumpCert(ConfigurationContext configurationContext, byte[] cert,
                                   String fileName) {
+        if (log.isDebugEnabled()) {
+            log.debug("Dumping certificate to file: " + fileName);
+        }
         if (!verifyCertExistence(fileName, configurationContext)) {
             String workDir = (String) configurationContext.getProperty(ServerConstants.WORK_DIR);
             File pubCert = new File(workDir + File.separator + "pub_certs");
 
             if (fileName == null) {
                 fileName = String.valueOf(System.currentTimeMillis() + new SecureRandom().nextDouble()) + ".cert";
+                if (log.isDebugEnabled()) {
+                    log.debug("Generated certificate file name: " + fileName);
+                }
             }
             if (!pubCert.exists()) {
                 pubCert.mkdirs();
+                if (log.isDebugEnabled()) {
+                    log.debug("Created pub_certs directory at: " + pubCert.getAbsolutePath());
+                }
             }
 
             String filePath = workDir + File.separator + "pub_certs" + File.separator + fileName;
@@ -64,6 +73,9 @@ public class KeyStoreMgtUtil {
             try {
                 outStream = new FileOutputStream(filePath);
                 outStream.write(cert);
+                if (log.isInfoEnabled()) {
+                    log.info("Certificate dumped successfully to file: " + filePath);
+                }
             } catch (Exception e) {
                 String msg = "Error when writing the public certificate to a file";
                 log.error(msg);
@@ -80,6 +92,10 @@ public class KeyStoreMgtUtil {
             }
 
             fileResourcesMap.put(fileName, filePath);
+        } else {
+            if (log.isDebugEnabled()) {
+                log.debug("Certificate file already exists: " + fileName);
+            }
         }
         return WSO2Constants.ContextPaths.DOWNLOAD_PATH + "?id=" + fileName;
     }
@@ -95,8 +111,14 @@ public class KeyStoreMgtUtil {
         String filePath = workDir + File.separator + "pub_certs" + File.separator + fileName;
         File pubCert = new File(workDir + File.separator + "pub_certs" + File.separator + fileName);
 
+        if (log.isDebugEnabled()) {
+            log.debug("Checking certificate existence for file: " + fileName);
+        }
         //if cert is still available then exit
         if (pubCert.exists()) {
+            if (log.isDebugEnabled()) {
+                log.debug("Certificate file already exists at: " + filePath);
+            }
             Map fileResourcesMap = (Map) configurationContext.getProperty(WSO2Constants.FILE_RESOURCE_MAP);
             if (fileResourcesMap == null) {
                 fileResourcesMap = new Hashtable();
@@ -106,6 +128,9 @@ public class KeyStoreMgtUtil {
                 fileResourcesMap.put(fileName, filePath);
             }
             return true;
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("Certificate file does not exist: " + filePath);
         }
         return false;
     }
