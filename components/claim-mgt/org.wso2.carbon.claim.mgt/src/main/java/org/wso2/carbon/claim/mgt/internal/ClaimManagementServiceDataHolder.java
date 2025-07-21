@@ -18,17 +18,23 @@
 
 package org.wso2.carbon.claim.mgt.internal;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.osgi.framework.BundleContext;
 import org.wso2.carbon.user.core.service.RealmService;
 
 public class ClaimManagementServiceDataHolder {
 
+    private static final Log log = LogFactory.getLog(ClaimManagementServiceDataHolder.class);
     private static ClaimManagementServiceDataHolder instance = new ClaimManagementServiceDataHolder();
 
     private BundleContext bundleContext = null;
     private RealmService realmService = null;
 
     public static ClaimManagementServiceDataHolder getInstance() {
+        if (log.isDebugEnabled()) {
+            log.debug("Returning ClaimManagementServiceDataHolder instance");
+        }
         return instance;
     }
 
@@ -37,6 +43,9 @@ public class ClaimManagementServiceDataHolder {
     }
 
     public void setRealmService(RealmService realmService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Setting RealmService in ClaimManagementServiceDataHolder");
+        }
         this.realmService = realmService;
     }
 
@@ -45,6 +54,9 @@ public class ClaimManagementServiceDataHolder {
     }
 
     public void setBundleContext(BundleContext bundleContext) {
+        if (log.isDebugEnabled()) {
+            log.debug("Setting BundleContext in ClaimManagementServiceDataHolder");
+        }
         this.bundleContext = bundleContext;
     }
 

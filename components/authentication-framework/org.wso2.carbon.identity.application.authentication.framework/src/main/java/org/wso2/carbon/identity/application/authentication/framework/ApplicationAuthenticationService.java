@@ -41,6 +41,10 @@ public class ApplicationAuthenticationService {
 
     public ApplicationAuthenticator getAuthenticator(String name) throws ApplicationAuthenticationException {
 
+        if (log.isDebugEnabled()) {
+            log.debug("Retrieving authenticator with name: " + (name != null ? name : "[null]"));
+        }
+
         if (name == null) {
             String errMsg = "Authenticator name cannot be null";
             log.error(errMsg);
@@ -54,17 +58,38 @@ public class ApplicationAuthenticationService {
 
             if (authenticator.getName().equals(name)) {
                 appAuthenticator = authenticator;
+                if (log.isDebugEnabled()) {
+                    log.debug("Found authenticator: " + name);
+                }
+                break;
             }
+        }
+
+        if (appAuthenticator == null && log.isDebugEnabled()) {
+            log.debug("Authenticator not found: " + name);
         }
 
         return appAuthenticator;
     }
 
     public List<ApplicationAuthenticator> getAllAuthenticators() throws ApplicationAuthenticationException {
-        return ApplicationAuthenticatorManager.getInstance().getSystemDefinedAuthenticators();
+        if (log.isDebugEnabled()) {
+            log.debug("Retrieving all system defined authenticators.");
+        }
+        List<ApplicationAuthenticator> authenticators = 
+                ApplicationAuthenticatorManager.getInstance().getSystemDefinedAuthenticators();
+        if (log.isDebugEnabled()) {
+            log.debug("Retrieved " + (authenticators != null ? authenticators.size() : 0) + 
+                     " system defined authenticators.");
+        }
+        return authenticators;
     }
 
     public List<ApplicationAuthenticator> getLocalAuthenticators() throws ApplicationAuthenticationException {
+
+        if (log.isDebugEnabled()) {
+            log.debug("Retrieving local authenticators.");
+        }
 
         List<ApplicationAuthenticator> localAuthenticators = new ArrayList<ApplicationAuthenticator>();
 
@@ -76,10 +101,18 @@ public class ApplicationAuthenticationService {
             }
         }
 
+        if (log.isDebugEnabled()) {
+            log.debug("Retrieved " + localAuthenticators.size() + " local authenticators.");
+        }
+
         return localAuthenticators;
     }
 
     public List<ApplicationAuthenticator> getFederatedAuthenticators() throws ApplicationAuthenticationException {
+
+        if (log.isDebugEnabled()) {
+            log.debug("Retrieving federated authenticators.");
+        }
 
         List<ApplicationAuthenticator> federatedAuthenticators = new ArrayList<ApplicationAuthenticator>();
 
@@ -91,10 +124,18 @@ public class ApplicationAuthenticationService {
             }
         }
 
+        if (log.isDebugEnabled()) {
+            log.debug("Retrieved " + federatedAuthenticators.size() + " federated authenticators.");
+        }
+
         return federatedAuthenticators;
     }
 
     public List<ApplicationAuthenticator> getRequestPathAuthenticators() throws ApplicationAuthenticationException {
+
+        if (log.isDebugEnabled()) {
+            log.debug("Retrieving request path authenticators.");
+        }
 
         List<ApplicationAuthenticator> reqPathAuthenticators = new ArrayList<ApplicationAuthenticator>();
 
@@ -104,6 +145,10 @@ public class ApplicationAuthenticationService {
             if (authenticator instanceof RequestPathApplicationAuthenticator) {
                 reqPathAuthenticators.add(authenticator);
             }
+        }
+
+        if (log.isDebugEnabled()) {
+            log.debug("Retrieved " + reqPathAuthenticators.size() + " request path authenticators.");
         }
 
         return reqPathAuthenticators;
