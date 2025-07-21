@@ -17,6 +17,8 @@
  */
 package org.wso2.carbon.claim.mgt;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.claim.mgt.dto.ClaimAttributeDTO;
 import org.wso2.carbon.claim.mgt.dto.ClaimDTO;
 import org.wso2.carbon.claim.mgt.dto.ClaimDialectDTO;
@@ -34,10 +36,16 @@ import java.util.Map.Entry;
 
 public class ClaimAdminService {
 
+    private static final Log log = LogFactory.getLog(ClaimAdminService.class);
+
     /**
      * @throws ClaimManagementException
      */
     public ClaimDialectDTO[] getClaimMappings() throws ClaimManagementException {
+
+        if (log.isDebugEnabled()) {
+            log.debug("Retrieving all claim mappings");
+        }
 
         ClaimMapping[] claimMappings = null;
         List<ClaimMapping> mappingList = null;
@@ -48,6 +56,9 @@ public class ClaimAdminService {
         claimMappings = ClaimManagerHandler.getInstance().getAllClaimMappings();
 
         if (claimMappings == null || claimMappings.length == 0) {
+            if (log.isDebugEnabled()) {
+                log.debug("No claim mappings found");
+            }
             return new ClaimDialectDTO[0];
         }
 
@@ -98,6 +109,9 @@ public class ClaimAdminService {
      * @throws ClaimManagementException
      */
     public ClaimDialectDTO getClaimMappingByDialect(String dialectUri) throws ClaimManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Retrieving claim mappings for dialect: " + dialectUri);
+        }
         ClaimMapping[] claimMappings;
         ClaimDialect claimDialect;
 
@@ -119,6 +133,9 @@ public class ClaimAdminService {
         });
 
         if (claimMappings.length == 0) {
+            if (log.isDebugEnabled()) {
+                log.debug("No claim mappings found for dialect: " + dialectUri);
+            }
             return null;
         }
 
@@ -135,10 +152,16 @@ public class ClaimAdminService {
      * @throws ClaimManagementException
      */
     public void upateClaimMapping(ClaimMappingDTO claimMappingDTO) throws ClaimManagementException {
+        if (log.isDebugEnabled() && claimMappingDTO != null && claimMappingDTO.getClaim() != null) {
+            log.debug("Updating claim mapping for claim URI: " + claimMappingDTO.getClaim().getClaimUri());
+        }
         /*Convert the simple structure of ClaimMapping received, to the complex structure
         of ClaimMapping which is used in the back end. */
         ClaimMapping claimMapping = convertClaimMappingDTOToClaimMapping(claimMappingDTO);
         ClaimManagerHandler.getInstance().updateClaimMapping(claimMapping);
+        if (log.isDebugEnabled()) {
+            log.debug("Successfully updated claim mapping");
+        }
     }
 
     /**
@@ -146,6 +169,9 @@ public class ClaimAdminService {
      * @throws ClaimManagementException
      */
     public void addNewClaimMapping(ClaimMappingDTO claimMappingDTO) throws ClaimManagementException {
+        if (log.isDebugEnabled() && claimMappingDTO != null && claimMappingDTO.getClaim() != null) {
+            log.debug("Adding new claim mapping for claim URI: " + claimMappingDTO.getClaim().getClaimUri());
+        }
         /*Convert the simple structure of ClaimMapping received, to the complex structure
         of ClaimMapping which is used in the back end. */
         ClaimMapping claimMapping = convertClaimMappingDTOToClaimMapping(claimMappingDTO);
@@ -153,10 +179,14 @@ public class ClaimAdminService {
         ClaimMapping currentMapping = handler.getClaimMapping(
                 claimMapping.getClaim().getClaimUri());
         if (currentMapping != null) {
+            log.warn("Duplicate claim URI detected: " + claimMapping.getClaim().getClaimUri());
             throw new ClaimManagementException(
                     "Duplicate claim exist in the system. Please pick a different Claim Uri");
         }
         handler.addNewClaimMapping(claimMapping);
+        if (log.isDebugEnabled()) {
+            log.debug("Successfully added new claim mapping");
+        }
     }
 
     /**
@@ -165,24 +195,42 @@ public class ClaimAdminService {
      * @throws ClaimManagementException
      */
     public void removeClaimMapping(String dialectUri, String claimUri) throws ClaimManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Removing claim mapping for dialect URI: " + dialectUri + " and claim URI: " + claimUri);
+        }
         ClaimManagerHandler.getInstance().removeClaimMapping(dialectUri, claimUri);
+        if (log.isDebugEnabled()) {
+            log.debug("Successfully removed claim mapping");
+        }
     }
 
     /**
      * @param
      */
     public void addNewClaimDialect(ClaimDialectDTO claimDialectDTO) throws ClaimManagementException {
+        if (log.isDebugEnabled() && claimDialectDTO != null) {
+            log.debug("Adding new claim dialect: " + claimDialectDTO.getDialectURI());
+        }
         /*Convert the simple structure of ClaimDialectDTO received, to the complex structure
         of ClaimDialect which is used in the back end. */
         ClaimDialect claimDialect = convertClaimDialectDTOToClaimDialect(claimDialectDTO);
         ClaimManagerHandler.getInstance().addNewClaimDialect(claimDialect);
+        if (log.isDebugEnabled()) {
+            log.debug("Successfully added new claim dialect");
+        }
     }
 
     /**
      * @param
      */
     public void removeClaimDialect(String dialectUri) throws ClaimManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Removing claim dialect: " + dialectUri);
+        }
         ClaimManagerHandler.getInstance().removeClaimDialect(dialectUri);
+        if (log.isDebugEnabled()) {
+            log.debug("Successfully removed claim dialect");
+        }
     }
 
     private ClaimDialectDTO[] convertClaimDialectArrayToClaimDialectDTOArray(

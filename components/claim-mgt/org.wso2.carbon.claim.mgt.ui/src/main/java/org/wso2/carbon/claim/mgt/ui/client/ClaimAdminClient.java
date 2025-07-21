@@ -44,6 +44,9 @@ public class ClaimAdminClient {
      */
     public ClaimAdminClient(String cookie, String backendServerURL,
                             ConfigurationContext configCtx) throws AxisFault {
+        if (log.isDebugEnabled()) {
+            log.debug("Initializing ClaimAdminClient with backend server URL: " + backendServerURL);
+        }
         String serviceURL = backendServerURL + "ClaimManagementService";
         stub = new ClaimManagementServiceStub(configCtx, serviceURL);
         ServiceClient client = stub._getServiceClient();
@@ -53,6 +56,7 @@ public class ClaimAdminClient {
         option.setProperty(
                 org.apache.axis2.transport.http.HTTPConstants.COOKIE_STRING,
                 cookie);
+        log.info("ClaimAdminClient initialized successfully");
     }
 
     /**
@@ -61,8 +65,13 @@ public class ClaimAdminClient {
      * @throws AxisFault
      */
     public ClaimDialectDTO[] getAllClaimMappings() throws AxisFault {
+        if (log.isDebugEnabled()) {
+            log.debug("Retrieving all claim mappings");
+        }
         try {
-            return stub.getClaimMappings();
+            ClaimDialectDTO[] mappings = stub.getClaimMappings();
+            log.info("Successfully retrieved " + (mappings != null ? mappings.length : 0) + " claim mappings");
+            return mappings;
         } catch (Exception e) {
             handleException("Error while reading claim mappings", e);
         }
@@ -78,8 +87,17 @@ public class ClaimAdminClient {
      */
     public ClaimDialectDTO getAllClaimMappingsByDialect(String dialect)
             throws AxisFault {
+        if (log.isDebugEnabled()) {
+            log.debug("Retrieving claim mappings for dialect: " + dialect);
+        }
         try {
-            return stub.getClaimMappingByDialect(dialect);
+            ClaimDialectDTO mapping = stub.getClaimMappingByDialect(dialect);
+            if (mapping != null) {
+                log.info("Successfully retrieved claim mappings for dialect: " + dialect);
+            } else {
+                log.warn("No claim mappings found for dialect: " + dialect);
+            }
+            return mapping;
         } catch (Exception e) {
             handleException("Error while reading claim mappings by dialect", e);
         }
@@ -97,29 +115,37 @@ public class ClaimAdminClient {
      */
     public ClaimDialectDTO getAllClaimMappingsByDialectWithRole(String dialect)
             throws AxisFault {
+        if (log.isDebugEnabled()) {
+            log.debug("Retrieving claim mappings with role claims for dialect: " + dialect);
+        }
         try {
             ClaimDialectDTO claims = stub.getClaimMappingByDialect(dialect);
-            ClaimMappingDTO[] oldClaims = claims.getClaimMappings();
-            ClaimMappingDTO[] newClaims = new ClaimMappingDTO[claims
-                    .getClaimMappings().length + 1];
-            int i = 0;
-            for (; i < oldClaims.length; i++) {
-                newClaims[i] = oldClaims[i];
+            if (claims != null && claims.getClaimMappings() != null) {
+                ClaimMappingDTO[] oldClaims = claims.getClaimMappings();
+                ClaimMappingDTO[] newClaims = new ClaimMappingDTO[claims
+                        .getClaimMappings().length + 1];
+                int i = 0;
+                for (; i < oldClaims.length; i++) {
+                    newClaims[i] = oldClaims[i];
+                }
+                ClaimMappingDTO mapping = new ClaimMappingDTO();
+                ClaimDTO role = new ClaimDTO();
+                role.setClaimUri("http://wso2.org/claims/role");
+                mapping.setClaim(role);
+                newClaims[i] = mapping;
+
+                // If role group separation is enabled, we need to send the roles claim also as UI might need that.
+                ClaimMappingDTO rolesMapping = new ClaimMappingDTO();
+                ClaimDTO roles = new ClaimDTO();
+                roles.setClaimUri("http://wso2.org/claims/roles");
+                rolesMapping.setClaim(roles);
+                newClaims[i] = rolesMapping;
+
+                claims.setClaimMappings(newClaims);
+                log.info("Successfully processed claim mappings with role claims for dialect: " + dialect);
+            } else {
+                log.warn("No base claim mappings found for dialect: " + dialect);
             }
-            ClaimMappingDTO mapping = new ClaimMappingDTO();
-            ClaimDTO role = new ClaimDTO();
-            role.setClaimUri("http://wso2.org/claims/role");
-            mapping.setClaim(role);
-            newClaims[i] = mapping;
-
-            // If role group separation is enabled, we need to send the roles claim also as UI might need that.
-            ClaimMappingDTO rolesMapping = new ClaimMappingDTO();
-            ClaimDTO roles = new ClaimDTO();
-            roles.setClaimUri("http://wso2.org/claims/roles");
-            rolesMapping.setClaim(roles);
-            newClaims[i] = rolesMapping;
-
-            claims.setClaimMappings(newClaims);
             return claims;
         } catch (Exception e) {
             handleException("Error while reading claim mappings by dialect", e);
@@ -133,8 +159,12 @@ public class ClaimAdminClient {
      * @throws AxisFault
      */
     public void addNewClaimDialect(ClaimDialectDTO dialect) throws AxisFault {
+        if (log.isDebugEnabled()) {
+            log.debug("Adding new claim dialect: " + (dialect != null ? dialect.getDialectURI() : "null"));
+        }
         try {
             stub.addNewClaimDialect(dialect);
+            log.info("Successfully added new claim dialect: " + (dialect != null ? dialect.getDialectURI() : "null"));
         } catch (Exception e) {
             handleException(e.getMessage(), e);
         }
@@ -147,8 +177,16 @@ public class ClaimAdminClient {
      */
     public void addNewClaimMappping(ClaimMappingDTO claimMapping)
             throws AxisFault {
+        if (log.isDebugEnabled()) {
+            log.debug("Adding new claim mapping: " + 
+                     (claimMapping != null && claimMapping.getClaim() != null ? 
+                      claimMapping.getClaim().getClaimUri() : "null"));
+        }
         try {
             stub.addNewClaimMapping(claimMapping);
+            log.info("Successfully added new claim mapping: " + 
+                    (claimMapping != null && claimMapping.getClaim() != null ? 
+                     claimMapping.getClaim().getClaimUri() : "null"));
         } catch (Exception e) {
             handleException(e.getMessage(), e);
         }
@@ -161,8 +199,16 @@ public class ClaimAdminClient {
      */
     public void updateClaimMapping(ClaimMappingDTO claimMapping)
             throws AxisFault {
+        if (log.isDebugEnabled()) {
+            log.debug("Updating claim mapping: " + 
+                     (claimMapping != null && claimMapping.getClaim() != null ? 
+                      claimMapping.getClaim().getClaimUri() : "null"));
+        }
         try {
             stub.upateClaimMapping(claimMapping);
+            log.info("Successfully updated claim mapping: " + 
+                    (claimMapping != null && claimMapping.getClaim() != null ? 
+                     claimMapping.getClaim().getClaimUri() : "null"));
         } catch (Exception e) {
             handleException("Error while updating claim mapping", e);
         }
@@ -176,8 +222,13 @@ public class ClaimAdminClient {
      */
     public void removeClaimMapping(String dialectUri, String claimUri)
             throws AxisFault {
+        if (log.isDebugEnabled()) {
+            log.debug("Removing claim mapping with dialect URI: " + dialectUri + " and claim URI: " + claimUri);
+        }
         try {
             stub.removeClaimMapping(dialectUri, claimUri);
+            log.info("Successfully removed claim mapping with dialect URI: " + dialectUri + " and claim URI: " + 
+                    claimUri);
         } catch (Exception e) {
             handleException("Error while removing claim mapping", e);
         }
@@ -189,8 +240,12 @@ public class ClaimAdminClient {
      * @throws AxisFault
      */
     public void removeClaimDialect(String dialectUri) throws AxisFault {
+        if (log.isDebugEnabled()) {
+            log.debug("Removing claim dialect: " + dialectUri);
+        }
         try {
             stub.removeClaimDialect(dialectUri);
+            log.info("Successfully removed claim dialect: " + dialectUri);
         } catch (Exception e) {
             handleException("Error while removing claim dialect", e);
         }

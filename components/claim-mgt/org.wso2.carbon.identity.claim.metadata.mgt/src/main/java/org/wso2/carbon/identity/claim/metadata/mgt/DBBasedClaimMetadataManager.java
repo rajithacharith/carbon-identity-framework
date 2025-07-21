@@ -19,6 +19,8 @@
 package org.wso2.carbon.identity.claim.metadata.mgt;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.identity.claim.metadata.mgt.dao.ClaimDialectDAO;
 import org.wso2.carbon.identity.claim.metadata.mgt.dao.ExternalClaimDAO;
 import org.wso2.carbon.identity.claim.metadata.mgt.dao.LocalClaimDAO;
@@ -40,6 +42,8 @@ import java.util.Optional;
  */
 public class DBBasedClaimMetadataManager implements ReadWriteClaimMetadataManager {
 
+    private static final Log log = LogFactory.getLog(DBBasedClaimMetadataManager.class);
+
     private final ClaimDialectDAO claimDialectDAO = new ClaimDialectDAO();
     private final LocalClaimDAO localClaimDAO = new LocalClaimDAO();
     private final ExternalClaimDAO externalClaimDAO = new ExternalClaimDAO();
@@ -47,7 +51,18 @@ public class DBBasedClaimMetadataManager implements ReadWriteClaimMetadataManage
     @Override
     public List<ClaimDialect> getClaimDialects(int tenantId) throws ClaimMetadataException {
 
-        return this.claimDialectDAO.getClaimDialects(tenantId);
+        if (log.isDebugEnabled()) {
+            log.debug("Retrieving claim dialects from database for tenant: " + tenantId);
+        }
+
+        List<ClaimDialect> claimDialects = this.claimDialectDAO.getClaimDialects(tenantId);
+
+        if (log.isDebugEnabled()) {
+            log.debug("Retrieved " + (claimDialects != null ? claimDialects.size() : 0) + 
+                    " claim dialects from database for tenant: " + tenantId);
+        }
+
+        return claimDialects;
     }
 
     @Override
@@ -65,7 +80,17 @@ public class DBBasedClaimMetadataManager implements ReadWriteClaimMetadataManage
     @Override
     public void addClaimDialect(ClaimDialect claimDialect, int tenantId) throws ClaimMetadataException {
 
+        if (log.isDebugEnabled()) {
+            log.debug("Adding claim dialect to database: " + 
+                    (claimDialect != null ? claimDialect.getClaimDialectURI() : null) + " for tenant: " + tenantId);
+        }
+
         this.claimDialectDAO.addClaimDialect(claimDialect, tenantId);
+
+        if (log.isDebugEnabled()) {
+            log.debug("Successfully added claim dialect to database: " + 
+                    claimDialect.getClaimDialectURI() + " for tenant: " + tenantId);
+        }
     }
 
     @Override
@@ -116,13 +141,33 @@ public class DBBasedClaimMetadataManager implements ReadWriteClaimMetadataManage
     @Override
     public void addLocalClaim(LocalClaim localClaim, int tenantId) throws ClaimMetadataException {
 
+        if (log.isDebugEnabled()) {
+            log.debug("Adding local claim to database: " + 
+                    (localClaim != null ? localClaim.getClaimURI() : null) + " for tenant: " + tenantId);
+        }
+
         this.localClaimDAO.addLocalClaim(localClaim, tenantId);
+
+        if (log.isDebugEnabled()) {
+            log.debug("Successfully added local claim to database: " + 
+                    localClaim.getClaimURI() + " for tenant: " + tenantId);
+        }
     }
 
     @Override
     public void updateLocalClaim(LocalClaim localClaim, int tenantId) throws ClaimMetadataException {
 
+        if (log.isDebugEnabled()) {
+            log.debug("Updating local claim in database: " + 
+                    (localClaim != null ? localClaim.getClaimURI() : null) + " for tenant: " + tenantId);
+        }
+
         this.localClaimDAO.updateLocalClaim(localClaim, tenantId);
+
+        if (log.isDebugEnabled()) {
+            log.debug("Successfully updated local claim in database: " + 
+                    localClaim.getClaimURI() + " for tenant: " + tenantId);
+        }
     }
 
     @Override
@@ -135,7 +180,16 @@ public class DBBasedClaimMetadataManager implements ReadWriteClaimMetadataManage
     @Override
     public void removeLocalClaim(String localClaimURI, int tenantId) throws ClaimMetadataException {
 
+        if (log.isDebugEnabled()) {
+            log.debug("Removing local claim from database: " + localClaimURI + " for tenant: " + tenantId);
+        }
+
         this.localClaimDAO.removeLocalClaim(localClaimURI, tenantId);
+
+        if (log.isDebugEnabled()) {
+            log.debug("Successfully removed local claim from database: " + localClaimURI + 
+                    " for tenant: " + tenantId);
+        }
     }
 
     @Override
