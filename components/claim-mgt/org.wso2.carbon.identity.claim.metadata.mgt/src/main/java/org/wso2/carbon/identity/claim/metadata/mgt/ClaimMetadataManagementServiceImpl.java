@@ -101,7 +101,10 @@ public class ClaimMetadataManagementServiceImpl implements ClaimMetadataManageme
     @Override
     public List<ClaimDialect> getClaimDialects(String tenantDomain) throws ClaimMetadataException {
 
-        // TODO : validate tenant domain?
+        if (log.isDebugEnabled()) {
+            log.debug("Retrieving claim dialects for tenant: " + tenantDomain);
+        }
+
         int tenantId = IdentityTenantUtil.getTenantId(tenantDomain);
 
         // Add listener
@@ -110,11 +113,21 @@ public class ClaimMetadataManagementServiceImpl implements ClaimMetadataManageme
 
         // Add listener
 
+        if (log.isDebugEnabled()) {
+            log.debug("Retrieved " + (claimDialects != null ? claimDialects.size() : 0) + 
+                    " claim dialects for tenant: " + tenantDomain);
+        }
+
         return claimDialects;
     }
 
     @Override
     public void addClaimDialect(ClaimDialect claimDialect, String tenantDomain) throws ClaimMetadataException {
+
+        if (log.isDebugEnabled()) {
+            log.debug("Adding claim dialect: " + (claimDialect != null ? claimDialect.getClaimDialectURI() : null) +
+                    " for tenant: " + tenantDomain);
+        }
 
         if (claimDialect == null || StringUtils.isBlank(claimDialect.getClaimDialectURI())) {
             throw new ClaimMetadataClientException(ERROR_CODE_EMPTY_CLAIM_DIALECT);
@@ -142,6 +155,11 @@ public class ClaimMetadataManagementServiceImpl implements ClaimMetadataManageme
         this.unifiedClaimMetadataManager.addClaimDialect(claimDialect, tenantId);
 
         ClaimMetadataEventPublisherProxy.getInstance().publishPostAddClaimDialect(tenantId, claimDialect);
+
+        if (log.isDebugEnabled()) {
+            log.debug("Successfully added claim dialect: " + claimDialect.getClaimDialectURI() +
+                    " for tenant: " + tenantDomain);
+        }
 
     }
 
@@ -176,6 +194,11 @@ public class ClaimMetadataManagementServiceImpl implements ClaimMetadataManageme
     @Override
     public void removeClaimDialect(ClaimDialect claimDialect, String tenantDomain) throws ClaimMetadataException {
 
+        if (log.isDebugEnabled()) {
+            log.debug("Removing claim dialect: " + (claimDialect != null ? claimDialect.getClaimDialectURI() : null) +
+                    " for tenant: " + tenantDomain);
+        }
+
         if (claimDialect == null || StringUtils.isBlank(claimDialect.getClaimDialectURI())) {
             throw new ClaimMetadataClientException(ERROR_CODE_EMPTY_CLAIM_DIALECT.getCode(),
                     "Claim dialect URI cannot be empty");
@@ -190,6 +213,11 @@ public class ClaimMetadataManagementServiceImpl implements ClaimMetadataManageme
 
         this.unifiedClaimMetadataManager.removeClaimDialect(claimDialect, tenantId);
         ClaimMetadataEventPublisherProxy.getInstance().publishPostDeleteClaimDialect(tenantId, claimDialect);
+
+        if (log.isDebugEnabled()) {
+            log.debug("Successfully removed claim dialect: " + claimDialect.getClaimDialectURI() +
+                    " for tenant: " + tenantDomain);
+        }
 
     }
 
@@ -320,6 +348,11 @@ public class ClaimMetadataManagementServiceImpl implements ClaimMetadataManageme
     @Override
     public void addLocalClaim(LocalClaim localClaim, String tenantDomain) throws ClaimMetadataException {
 
+        if (log.isDebugEnabled()) {
+            log.debug("Adding local claim: " + (localClaim != null ? localClaim.getClaimURI() : null) +
+                    " for tenant: " + tenantDomain);
+        }
+
         if (localClaim == null || StringUtils.isBlank(localClaim.getClaimURI())) {
             throw new ClaimMetadataClientException(ERROR_CODE_EMPTY_LOCAL_CLAIM_URI);
         } else if (localClaim.getMappedAttributes().isEmpty()) {
@@ -347,10 +380,20 @@ public class ClaimMetadataManagementServiceImpl implements ClaimMetadataManageme
         this.unifiedClaimMetadataManager.addLocalClaim(localClaim, tenantId);
 
         ClaimMetadataEventPublisherProxy.getInstance().publishPostAddLocalClaim(tenantId, localClaim);
+
+        if (log.isDebugEnabled()) {
+            log.debug("Successfully added local claim: " + localClaim.getClaimURI() +
+                    " for tenant: " + tenantDomain);
+        }
     }
 
     @Override
     public void updateLocalClaim(LocalClaim localClaim, String tenantDomain) throws ClaimMetadataException {
+
+        if (log.isDebugEnabled()) {
+            log.debug("Updating local claim: " + (localClaim != null ? localClaim.getClaimURI() : null) +
+                    " for tenant: " + tenantDomain);
+        }
 
         if (localClaim == null || StringUtils.isBlank(localClaim.getClaimURI())) {
             throw new ClaimMetadataClientException(ERROR_CODE_EMPTY_LOCAL_CLAIM_URI);
@@ -383,6 +426,11 @@ public class ClaimMetadataManagementServiceImpl implements ClaimMetadataManageme
         this.unifiedClaimMetadataManager.updateLocalClaim(localClaim, tenantId);
 
         ClaimMetadataEventPublisherProxy.getInstance().publishPostUpdateLocalClaim(tenantId, localClaim);
+
+        if (log.isDebugEnabled()) {
+            log.debug("Successfully updated local claim: " + localClaim.getClaimURI() +
+                    " for tenant: " + tenantDomain);
+        }
     }
 
     @Override
@@ -405,6 +453,10 @@ public class ClaimMetadataManagementServiceImpl implements ClaimMetadataManageme
 
     @Override
     public void removeLocalClaim(String localClaimURI, String tenantDomain) throws ClaimMetadataException {
+
+        if (log.isDebugEnabled()) {
+            log.debug("Removing local claim: " + localClaimURI + " for tenant: " + tenantDomain);
+        }
 
         if (StringUtils.isBlank(localClaimURI)) {
             throw new ClaimMetadataClientException(ERROR_CODE_EMPTY_LOCAL_CLAIM_URI);
@@ -437,6 +489,10 @@ public class ClaimMetadataManagementServiceImpl implements ClaimMetadataManageme
             if (listener.isEnable() && !listener.doPostDeleteClaim(localClaimURI, tenantDomain)) {
                 return;
             }
+        }
+
+        if (log.isDebugEnabled()) {
+            log.debug("Successfully removed local claim: " + localClaimURI + " for tenant: " + tenantDomain);
         }
     }
 
