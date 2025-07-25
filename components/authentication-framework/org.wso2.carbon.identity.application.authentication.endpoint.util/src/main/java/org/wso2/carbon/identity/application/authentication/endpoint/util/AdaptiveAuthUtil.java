@@ -120,7 +120,7 @@ public class AdaptiveAuthUtil {
             try {
                 connectionTimeout = Integer.parseInt(connectionTimeoutString);
             } catch (NumberFormatException e) {
-                // Default value will be used.
+                log.warn("Invalid number format for property: " + propertyName + ", using default: " + defaultValue);
             }
         }
         return connectionTimeout;

@@ -51,6 +51,10 @@ public class LocalClaimDAO extends ClaimDAO {
 
     public List<LocalClaim> getLocalClaims(int tenantId) throws ClaimMetadataException {
 
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Retrieving local claims for tenant ID: %d", tenantId));
+        }
+
         List<LocalClaim> localClaims = new ArrayList<>();
 
         Connection connection = IdentityDatabaseUtil.getDBConnection(false);
@@ -76,6 +80,9 @@ public class LocalClaimDAO extends ClaimDAO {
             IdentityDatabaseUtil.closeConnection(connection);
         }
 
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Retrieved %d local claims for tenant ID: %d", localClaims.size(), tenantId));
+        }
         return localClaims;
     }
 
@@ -173,6 +180,11 @@ public class LocalClaimDAO extends ClaimDAO {
 
     public void addLocalClaim(LocalClaim localClaim, int tenantId) throws ClaimMetadataException {
 
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Adding local claim '%s' for tenant ID: %d", 
+                    localClaim != null ? localClaim.getClaimURI() : "null", tenantId));
+        }
+
         Connection connection = IdentityDatabaseUtil.getDBConnection();
 
         String localClaimURI = localClaim.getClaimURI();
@@ -198,6 +210,9 @@ public class LocalClaimDAO extends ClaimDAO {
 
             // End transaction
             connection.commit();
+            if (log.isInfoEnabled()) {
+                log.info(String.format("Successfully added local claim '%s' for tenant ID: %d", localClaimURI, tenantId));
+            }
         } catch (SQLException e) {
             rollbackTransaction(connection);
             throw new ClaimMetadataException("Error while adding local claim " + localClaimURI, e);
@@ -207,6 +222,11 @@ public class LocalClaimDAO extends ClaimDAO {
     }
 
     public void updateLocalClaim(LocalClaim localClaim, int tenantId) throws ClaimMetadataException {
+
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Updating local claim '%s' for tenant ID: %d", 
+                    localClaim != null ? localClaim.getClaimURI() : "null", tenantId));
+        }
 
         Connection connection = IdentityDatabaseUtil.getDBConnection();
 
@@ -227,6 +247,9 @@ public class LocalClaimDAO extends ClaimDAO {
 
             // End transaction
             connection.commit();
+            if (log.isInfoEnabled()) {
+                log.info(String.format("Successfully updated local claim '%s' for tenant ID: %d", localClaimURI, tenantId));
+            }
         } catch (SQLException e) {
             rollbackTransaction(connection);
             throw new ClaimMetadataException("Error while updating local claim " + localClaimURI, e);

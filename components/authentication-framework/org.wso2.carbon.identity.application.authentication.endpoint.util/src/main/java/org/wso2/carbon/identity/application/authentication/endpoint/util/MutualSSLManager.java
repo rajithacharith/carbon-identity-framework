@@ -309,12 +309,19 @@ public class MutualSSLManager {
     public static void loadKeyStore(String keyStorePath, String keyStorePassword)
             throws AuthenticationException {
 
+        if (log.isDebugEnabled()) {
+            log.debug("Loading KeyStore from path: " + keyStorePath);
+        }
+
         try {
             String fileExtension = keyStorePath.substring(keyStorePath.lastIndexOf("."));
             MutualSSLManager.keyStorePassword = keyStorePassword.toCharArray();
             keyStore = KeystoreUtils.getKeystoreInstance(KeystoreUtils.getFileTypeByExtension(fileExtension));
             try (InputStream fis = new FileInputStream(keyStorePath)) {
                 keyStore.load(fis, MutualSSLManager.keyStorePassword);
+            }
+            if (log.isDebugEnabled()) {
+                log.debug("KeyStore loaded successfully from: " + keyStorePath);
             }
         } catch (KeyStoreException | NoSuchProviderException | CertificateException | NoSuchAlgorithmException |
                  IOException | CarbonException e) {
@@ -332,10 +339,17 @@ public class MutualSSLManager {
     public static void loadTrustStore(String trustStorePath, String trustStorePassword)
             throws AuthenticationException {
 
+        if (log.isDebugEnabled()) {
+            log.debug("Loading TrustStore from path: " + trustStorePath);
+        }
+
         try {
             trustStore = KeystoreUtils.getKeystoreInstance(trustStoreType);
             try (InputStream is = new FileInputStream(trustStorePath)) {
                 trustStore.load(is, trustStorePassword.toCharArray());
+            }
+            if (log.isDebugEnabled()) {
+                log.debug("TrustStore loaded successfully from: " + trustStorePath);
             }
         } catch (KeyStoreException | NoSuchProviderException | CertificateException | IOException |
                  NoSuchAlgorithmException e) {

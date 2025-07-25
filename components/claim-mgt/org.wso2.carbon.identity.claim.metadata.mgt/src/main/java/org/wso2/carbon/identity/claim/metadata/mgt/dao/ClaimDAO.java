@@ -52,6 +52,10 @@ public class ClaimDAO {
     public Map<Integer, Claim> getClaims(Connection connection, String claimDialectURI, int tenantId) throws
             ClaimMetadataException {
 
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Retrieving claims for dialect '%s', tenant ID: %d", claimDialectURI, tenantId));
+        }
+
         Map<Integer, Claim> claimMap = new HashMap<>();
 
         PreparedStatement prepStmt = null;
@@ -79,6 +83,9 @@ public class ClaimDAO {
             IdentityDatabaseUtil.closeStatement(prepStmt);
         }
 
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Retrieved %d claims for dialect '%s'", claimMap.size(), claimDialectURI));
+        }
         return claimMap;
     }
 
@@ -114,6 +121,10 @@ public class ClaimDAO {
             IdentityDatabaseUtil.closeStatement(prepStmt);
         }
 
+        if (log.isInfoEnabled()) {
+            log.info(String.format("Successfully added claim '%s' to dialect '%s' with ID: %d", 
+                    claimURI, claimDialectURI, claimId));
+        }
         return claimId;
     }
 

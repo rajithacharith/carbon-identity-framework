@@ -21,6 +21,8 @@ package org.wso2.carbon.identity.application.authentication.framework.context;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.SerializationUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.identity.application.authentication.framework.AuthenticatorStateInfo;
 import org.wso2.carbon.identity.application.authentication.framework.config.model.ExternalIdPConfig;
 import org.wso2.carbon.identity.application.authentication.framework.config.model.SequenceConfig;
@@ -45,6 +47,7 @@ import java.util.Map;
  */
 public class AuthenticationContext extends MessageContext implements Serializable {
 
+    private static final Log log = LogFactory.getLog(AuthenticationContext.class);
     private static final long serialVersionUID = 6438291349985653402L;
 
     private String contextIdentifier;
@@ -174,6 +177,9 @@ public class AuthenticationContext extends MessageContext implements Serializabl
     }
 
     public void setCurrentStep(int currentStep) {
+        if (log.isDebugEnabled()) {
+            log.debug("Setting current authentication step to: " + currentStep);
+        }
         this.currentStep = currentStep;
     }
 
@@ -182,6 +188,10 @@ public class AuthenticationContext extends MessageContext implements Serializabl
     }
 
     public void setSequenceConfig(SequenceConfig sequenceConfig) {
+        if (log.isDebugEnabled()) {
+            log.debug("Setting sequence configuration: " + 
+                     (sequenceConfig != null ? sequenceConfig.getName() : "[null]"));
+        }
         this.sequenceConfig = sequenceConfig;
     }
 
@@ -190,9 +200,15 @@ public class AuthenticationContext extends MessageContext implements Serializabl
     }
 
     public void setSubject(AuthenticatedUser subject) {
+        if (log.isDebugEnabled()) {
+            log.debug("Setting authentication subject: " + (subject != null ? subject.getUserName() : "[null]"));
+        }
         this.subject = subject;
         if (subject != null) {
             lastAuthenticatedUser = subject;
+            if (log.isDebugEnabled()) {
+                log.debug("Updated last authenticated user to: " + subject.getUserName());
+            }
         }
     }
 
@@ -209,6 +225,9 @@ public class AuthenticationContext extends MessageContext implements Serializabl
     }
 
     public void setRequestAuthenticated(boolean requestAuthenticated) {
+        if (log.isDebugEnabled()) {
+            log.debug("Setting request authentication status to: " + requestAuthenticated);
+        }
         this.requestAuthenticated = requestAuthenticated;
     }
 
@@ -261,6 +280,9 @@ public class AuthenticationContext extends MessageContext implements Serializabl
     }
 
     public void setTenantDomain(String tenantDomain) {
+        if (log.isDebugEnabled()) {
+            log.debug("Setting tenant domain to: " + (tenantDomain != null ? tenantDomain : "[null]"));
+        }
         this.tenantDomain = tenantDomain;
     }
 
@@ -277,6 +299,9 @@ public class AuthenticationContext extends MessageContext implements Serializabl
     }
 
     public void setRetryCount(int retryCount) {
+        if (log.isDebugEnabled()) {
+            log.debug("Setting retry count to: " + retryCount);
+        }
         this.retryCount = retryCount;
     }
 
@@ -386,6 +411,10 @@ public class AuthenticationContext extends MessageContext implements Serializabl
     }
 
     public void setCurrentAuthenticator(String currentAuthenticator) {
+        if (log.isDebugEnabled()) {
+            log.debug("Setting current authenticator to: " + 
+                     (currentAuthenticator != null ? currentAuthenticator : "[null]"));
+        }
         this.currentAuthenticator = currentAuthenticator;
     }
 
@@ -432,6 +461,9 @@ public class AuthenticationContext extends MessageContext implements Serializabl
     }
 
     public void addAuthenticationStepHistory(AuthHistory history) {
+        if (log.isDebugEnabled()) {
+            log.debug("Adding authentication step to history.");
+        }
         authenticationStepHistory.add(history);
     }
 
@@ -622,6 +654,9 @@ public class AuthenticationContext extends MessageContext implements Serializabl
      */
     public void setActiveInAThread(boolean activeInAThread) {
 
+        if (log.isDebugEnabled()) {
+            log.debug("Setting authentication context active in thread: " + activeInAThread);
+        }
         this.activeInAThread = activeInAThread;
     }
 
@@ -631,6 +666,9 @@ public class AuthenticationContext extends MessageContext implements Serializabl
      */
     public void initializeAnalyticsData() {
 
+        if (log.isDebugEnabled()) {
+            log.debug("Initializing analytics data for authentication context.");
+        }
         Map<String, Serializable> analyticsData = new HashMap<>();
         this.addParameter(FrameworkConstants.AnalyticsData.DATA_MAP, analyticsData);
         this.setAnalyticsData(FrameworkConstants.AnalyticsData.AUTHENTICATION_START_TIME,

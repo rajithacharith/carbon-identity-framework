@@ -18,7 +18,12 @@
 
 package org.wso2.carbon.claim.mgt;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 public class ClaimMapping {
+
+    private static final Log log = LogFactory.getLog(ClaimMapping.class);
 
     private String nonCarbonDialect;
 
@@ -27,6 +32,10 @@ public class ClaimMapping {
     private String carbonClaimURI;
 
     public ClaimMapping(String nonCarbonDialect, String nonCarbonClaimURI, String carbonClaimURI) {
+        if (log.isDebugEnabled()) {
+            log.debug("Creating ClaimMapping - NonCarbon Dialect: " + nonCarbonDialect + 
+                ", NonCarbon ClaimURI: " + nonCarbonClaimURI + ", Carbon ClaimURI: " + carbonClaimURI);
+        }
         this.nonCarbonDialect = nonCarbonDialect;
         this.nonCarbonClaimURI = nonCarbonClaimURI;
         this.carbonClaimURI = carbonClaimURI;

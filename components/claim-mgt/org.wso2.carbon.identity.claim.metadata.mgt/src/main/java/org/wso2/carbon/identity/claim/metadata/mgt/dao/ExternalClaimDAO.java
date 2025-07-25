@@ -52,6 +52,11 @@ public class ExternalClaimDAO extends ClaimDAO {
     public List<ExternalClaim> getExternalClaims(String externalDialectURI, int tenantId) throws
             ClaimMetadataException {
 
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Retrieving external claims for dialect '%s', tenant ID: %d", 
+                    externalDialectURI, tenantId));
+        }
+
         List<ExternalClaim> externalClaims = new ArrayList<>();
         Connection connection = IdentityDatabaseUtil.getDBConnection(false);
         try {
@@ -60,10 +65,22 @@ public class ExternalClaimDAO extends ClaimDAO {
         finally {
             IdentityDatabaseUtil.closeConnection(connection);
         }
+
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Retrieved %d external claims for dialect '%s'", 
+                    externalClaims.size(), externalDialectURI));
+        }
         return externalClaims;
     }
 
     public void addExternalClaim(ExternalClaim externalClaim, int tenantId) throws ClaimMetadataException {
+
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Adding external claim '%s' in dialect '%s' mapped to '%s' for tenant ID: %d", 
+                    externalClaim != null ? externalClaim.getClaimURI() : "null",
+                    externalClaim != null ? externalClaim.getClaimDialectURI() : "null", 
+                    externalClaim != null ? externalClaim.getMappedLocalClaim() : "null", tenantId));
+        }
 
         Connection connection = IdentityDatabaseUtil.getDBConnection();
 
@@ -96,6 +113,10 @@ public class ExternalClaimDAO extends ClaimDAO {
             addClaimProperties(connection, externalClaimId, externalClaim.getClaimProperties(), tenantId);
             // End transaction
             connection.commit();
+            if (log.isInfoEnabled()) {
+                log.info(String.format("Successfully added external claim '%s' in dialect '%s' mapped to '%s'", 
+                        externalClaimURI, externalClaimDialectURI, mappedLocalClaimURI));
+            }
         } catch (SQLException e) {
             rollbackTransaction(connection);
             throw new ClaimMetadataException("Error while adding external claim " + externalClaimURI + " to " +

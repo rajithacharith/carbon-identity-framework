@@ -19,6 +19,8 @@
 package org.wso2.carbon.identity.claim.metadata.mgt;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.identity.claim.metadata.mgt.dao.ClaimDialectDAO;
 import org.wso2.carbon.identity.claim.metadata.mgt.dao.ExternalClaimDAO;
 import org.wso2.carbon.identity.claim.metadata.mgt.dao.LocalClaimDAO;
@@ -40,6 +42,8 @@ import java.util.Optional;
  */
 public class DBBasedClaimMetadataManager implements ReadWriteClaimMetadataManager {
 
+    private static final Log log = LogFactory.getLog(DBBasedClaimMetadataManager.class);
+
     private final ClaimDialectDAO claimDialectDAO = new ClaimDialectDAO();
     private final LocalClaimDAO localClaimDAO = new LocalClaimDAO();
     private final ExternalClaimDAO externalClaimDAO = new ExternalClaimDAO();
@@ -47,6 +51,9 @@ public class DBBasedClaimMetadataManager implements ReadWriteClaimMetadataManage
     @Override
     public List<ClaimDialect> getClaimDialects(int tenantId) throws ClaimMetadataException {
 
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Retrieving claim dialects for tenant ID: %d", tenantId));
+        }
         return this.claimDialectDAO.getClaimDialects(tenantId);
     }
 
@@ -65,7 +72,15 @@ public class DBBasedClaimMetadataManager implements ReadWriteClaimMetadataManage
     @Override
     public void addClaimDialect(ClaimDialect claimDialect, int tenantId) throws ClaimMetadataException {
 
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Adding claim dialect '%s' for tenant ID: %d", 
+                    claimDialect != null ? claimDialect.getClaimDialectURI() : "null", tenantId));
+        }
         this.claimDialectDAO.addClaimDialect(claimDialect, tenantId);
+        if (log.isInfoEnabled()) {
+            log.info(String.format("Successfully added claim dialect '%s' for tenant ID: %d", 
+                    claimDialect.getClaimDialectURI(), tenantId));
+        }
     }
 
     @Override
@@ -77,6 +92,9 @@ public class DBBasedClaimMetadataManager implements ReadWriteClaimMetadataManage
     @Override
     public List<LocalClaim> getLocalClaims(int tenantId) throws ClaimMetadataException {
 
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Retrieving local claims for tenant ID: %d", tenantId));
+        }
         return this.localClaimDAO.getLocalClaims(tenantId);
     }
 
@@ -116,13 +134,29 @@ public class DBBasedClaimMetadataManager implements ReadWriteClaimMetadataManage
     @Override
     public void addLocalClaim(LocalClaim localClaim, int tenantId) throws ClaimMetadataException {
 
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Adding local claim '%s' for tenant ID: %d", 
+                    localClaim != null ? localClaim.getClaimURI() : "null", tenantId));
+        }
         this.localClaimDAO.addLocalClaim(localClaim, tenantId);
+        if (log.isInfoEnabled()) {
+            log.info(String.format("Successfully added local claim '%s' for tenant ID: %d", 
+                    localClaim.getClaimURI(), tenantId));
+        }
     }
 
     @Override
     public void updateLocalClaim(LocalClaim localClaim, int tenantId) throws ClaimMetadataException {
 
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Updating local claim '%s' for tenant ID: %d", 
+                    localClaim != null ? localClaim.getClaimURI() : "null", tenantId));
+        }
         this.localClaimDAO.updateLocalClaim(localClaim, tenantId);
+        if (log.isInfoEnabled()) {
+            log.info(String.format("Successfully updated local claim '%s' for tenant ID: %d", 
+                    localClaim.getClaimURI(), tenantId));
+        }
     }
 
     @Override

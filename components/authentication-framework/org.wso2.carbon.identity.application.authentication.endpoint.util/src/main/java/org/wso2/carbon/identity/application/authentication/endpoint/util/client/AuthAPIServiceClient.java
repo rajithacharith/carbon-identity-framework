@@ -78,6 +78,10 @@ public class AuthAPIServiceClient {
 
         String endpointURL = basePath + "authenticate";
 
+        if (log.isDebugEnabled()) {
+            log.debug("Authenticating user: " + username + " with endpoint: " + endpointURL);
+        }
+
         HttpPost httpPostRequest = new HttpPost(endpointURL);
         httpPostRequest.setHeader(HttpHeaders.AUTHORIZATION, buildBasicAuthHeader(username, password));
         httpPostRequest.setHeader(HttpHeaders.CONTENT_TYPE, "application/json");

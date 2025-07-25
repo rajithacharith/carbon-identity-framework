@@ -19,10 +19,13 @@
 
 package org.wso2.carbon.claim.mgt;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.user.api.ClaimMapping;
 
 public class ClaimDialect {
 
+    private static final Log log = LogFactory.getLog(ClaimDialect.class);
     private ClaimMapping[] claimMapping;
     private String dialectUri;
     private String userStore;
@@ -37,15 +40,26 @@ public class ClaimDialect {
 
     public ClaimMapping[] getClaimMapping() {
         if (claimMapping != null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Returning claim mapping array with " + claimMapping.length + " mappings");
+            }
             return claimMapping.clone();
         } else {
+            if (log.isDebugEnabled()) {
+                log.debug("Claim mapping array is null, returning empty array");
+            }
             return new ClaimMapping[0];
         }
     }
 
     public void setClaimMapping(ClaimMapping[] claimMapping) {
         if (claimMapping != null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Setting claim mapping array with " + claimMapping.length + " mappings");
+            }
             this.claimMapping = claimMapping.clone();
+        } else if (log.isDebugEnabled()) {
+            log.debug("Setting claim mapping array to null");
         }
     }
 
