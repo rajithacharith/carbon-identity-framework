@@ -192,6 +192,10 @@ public class AuthenticationEndpointFilter implements Filter {
             } else {
                 loadPage = "login.jsp";
             }
+            
+            if (log.isDebugEnabled()) {
+                log.debug("Routing request to page: " + loadPage + " for protocol: " + protocolType);
+            }
             // This is done to prevent the recursive dispatching of the filter
             servletRequest.setAttribute(ATTRIBUTE_SKIP_PROPERTY, true);
             servletRequest.getRequestDispatcher(loadPage).forward(servletRequest, servletResponse);

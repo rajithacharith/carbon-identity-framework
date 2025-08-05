@@ -18,6 +18,8 @@
 
 package org.wso2.carbon.identity.application.authentication.framework.config.model;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.identity.application.authentication.framework.config.model.graph.AuthenticationGraph;
 import org.wso2.carbon.identity.application.authentication.framework.model.AuthenticatedUser;
 
@@ -33,6 +35,7 @@ import java.util.Map;
  */
 public class SequenceConfig implements Serializable, Cloneable {
 
+    private static final Log log = LogFactory.getLog(SequenceConfig.class);
     private static final long serialVersionUID = 6822366703354668075L;
 
     private String name;
@@ -53,6 +56,9 @@ public class SequenceConfig implements Serializable, Cloneable {
     private List<String> requestedAcr;
 
     public SequenceConfig() {
+        if (log.isDebugEnabled()) {
+            log.debug("Creating new SequenceConfig instance.");
+        }
     }
 
     public String getName() {
@@ -60,6 +66,9 @@ public class SequenceConfig implements Serializable, Cloneable {
     }
 
     public void setName(String name) {
+        if (log.isDebugEnabled()) {
+            log.debug("Setting sequence name to: " + (name != null ? name : "[null]"));
+        }
         this.name = name;
     }
 
@@ -68,6 +77,9 @@ public class SequenceConfig implements Serializable, Cloneable {
     }
 
     public void setStepMap(Map<Integer, StepConfig> stepMap) {
+        if (log.isDebugEnabled()) {
+            log.debug("Setting step map with " + (stepMap != null ? stepMap.size() : 0) + " steps.");
+        }
         this.stepMap = stepMap;
     }
 
@@ -76,6 +88,9 @@ public class SequenceConfig implements Serializable, Cloneable {
     }
 
     public void setForceAuthn(boolean isForceAuthn) {
+        if (log.isDebugEnabled()) {
+            log.debug("Setting force authentication flag to: " + isForceAuthn);
+        }
         this.isForceAuthn = isForceAuthn;
     }
 
@@ -101,6 +116,10 @@ public class SequenceConfig implements Serializable, Cloneable {
     }
 
     public void setApplicationConfig(ApplicationConfig applicationConfig) {
+        if (log.isDebugEnabled()) {
+            log.debug("Setting application configuration: " + 
+                     (applicationConfig != null ? "[provided]" : "[null]"));
+        }
         this.applicationConfig = applicationConfig;
     }
 
@@ -117,6 +136,9 @@ public class SequenceConfig implements Serializable, Cloneable {
     }
 
     public void setCompleted(boolean completed) {
+        if (log.isDebugEnabled()) {
+            log.debug("Setting sequence completion status to: " + completed);
+        }
         this.completed = completed;
     }
 
@@ -125,6 +147,10 @@ public class SequenceConfig implements Serializable, Cloneable {
     }
 
     public void setAuthenticatedUser(AuthenticatedUser authenticatedUser) {
+        if (log.isDebugEnabled()) {
+            log.debug("Setting authenticated user: " + 
+                     (authenticatedUser != null ? authenticatedUser.getUserName() : "[null]"));
+        }
         this.authenticatedUser = authenticatedUser;
     }
 
@@ -150,6 +176,10 @@ public class SequenceConfig implements Serializable, Cloneable {
     }
 
     public void setAuthenticationGraph(AuthenticationGraph authenticationGraph) {
+        if (log.isDebugEnabled()) {
+            log.debug("Setting authentication graph: " + 
+                     (authenticationGraph != null ? "[provided]" : "[null]"));
+        }
         this.authenticationGraph = authenticationGraph;
     }
 
@@ -161,6 +191,9 @@ public class SequenceConfig implements Serializable, Cloneable {
     }
 
     public void addRequestedAcr(String acr) {
+        if (log.isDebugEnabled()) {
+            log.debug("Adding requested ACR: " + (acr != null ? acr : "[null]"));
+        }
         if (requestedAcr == null) {
             requestedAcr = new ArrayList<>();
         }
@@ -174,6 +207,9 @@ public class SequenceConfig implements Serializable, Cloneable {
      * @return Object object
      */
     public Object clone() throws CloneNotSupportedException {
+        if (log.isDebugEnabled()) {
+            log.debug("Cloning SequenceConfig for: " + (name != null ? name : "[unnamed]"));
+        }
         SequenceConfig sequenceConfig = (SequenceConfig) super.clone();
         sequenceConfig.setApplicationConfig((ApplicationConfig) applicationConfig.clone());
         sequenceConfig.setStepMap(new HashMap<>(this.stepMap));
@@ -189,6 +225,9 @@ public class SequenceConfig implements Serializable, Cloneable {
         sequenceConfig.requestedAcr = new ArrayList<>(this.getRequestedAcr());
         sequenceConfig.setAuthenticationGraph(this.getAuthenticationGraph());
         sequenceConfig.setOptimizedApplicationConfig(this.getOptimizedApplicationConfig());
+        if (log.isDebugEnabled()) {
+            log.debug("Successfully cloned SequenceConfig.");
+        }
         return sequenceConfig;
     }
 

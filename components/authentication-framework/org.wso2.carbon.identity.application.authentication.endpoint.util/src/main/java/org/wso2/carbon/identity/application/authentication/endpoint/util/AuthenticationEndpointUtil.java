@@ -375,6 +375,10 @@ public class AuthenticationEndpointUtil {
      */
     public static String sendGetRequest(String backendURL) {
 
+        if (log.isDebugEnabled()) {
+            log.debug("Initiating GET request to backend URL: " + backendURL);
+        }
+
         try (CloseableHttpClient httpclient = HTTPClientUtils.createClientWithCustomHostnameVerifier().build()) {
 
             HttpGet httpGet = new HttpGet(backendURL);

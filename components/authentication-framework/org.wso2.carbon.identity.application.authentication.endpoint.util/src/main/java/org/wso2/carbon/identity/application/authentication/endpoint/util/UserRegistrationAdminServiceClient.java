@@ -21,6 +21,8 @@ package org.wso2.carbon.identity.application.authentication.endpoint.util;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.client.Options;
 import org.apache.axis2.client.ServiceClient;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.identity.user.registration.stub.UserRegistrationAdminServiceException;
 import org.wso2.carbon.identity.user.registration.stub.UserRegistrationAdminServiceIdentityException;
 import org.wso2.carbon.identity.user.registration.stub.UserRegistrationAdminServiceStub;
@@ -39,6 +41,7 @@ import java.util.Properties;
  */
 public class UserRegistrationAdminServiceClient {
 
+    private static final Log log = LogFactory.getLog(UserRegistrationAdminServiceClient.class);
 
     private UserRegistrationAdminServiceStub stub;
     private Properties prop;
@@ -57,12 +60,20 @@ public class UserRegistrationAdminServiceClient {
         String serviceURL = builder.append(TenantDataManager.getPropertyValue(Constants.SERVICES_URL)).append
                 (Constants.UserRegistrationConstants.USER_REGISTRATION_SERVICE).toString().replaceAll("(?<!(http:|https:))//", "/");
 
+        if (log.isDebugEnabled()) {
+            log.debug("Initializing UserRegistrationAdminServiceClient with URL: " + serviceURL);
+        }
+
         // Initialize the User Registration Admin Service stub with the service URL.
         stub = new UserRegistrationAdminServiceStub(serviceURL);
 
         ServiceClient client = stub._getServiceClient();
         Options option = client.getOptions();
         option.setManageSession(true);
+
+        if (log.isDebugEnabled()) {
+            log.debug("UserRegistrationAdminServiceClient initialized successfully");
+        }
     }
 
     /**
