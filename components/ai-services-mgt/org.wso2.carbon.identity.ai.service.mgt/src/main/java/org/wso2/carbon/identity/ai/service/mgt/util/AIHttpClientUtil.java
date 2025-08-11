@@ -148,6 +148,27 @@ public class AIHttpClientUtil {
         return request;
     }
 
+    private static HttpUriRequest createRequest(String url, Class<? extends HttpUriRequest> requestType,
+                                                String accessToken, Object requestBody) throws IOException {
+
+        HttpUriRequest request;
+        if (requestType == HttpPost.class) {
+            HttpPost post = new HttpPost(url);
+            if (requestBody != null) {
+                post.setEntity(new StringEntity(objectMapper.writeValueAsString(requestBody)));
+            }
+            request = post;
+        } else if (requestType == HttpGet.class) {
+            request = new HttpGet(url);
+        } else {
+            throw new IllegalArgumentException("Unsupported request type: " + requestType.getName());
+        }
+
+        request.setHeader(AUTHORIZATION, HTTP_BEARER + " " + accessToken);
+        request.setHeader(HEADER_CONTENT_TYPE, CONTENT_TYPE_JSON);
+        return request;
+    }
+    
     private static HttpResponseWrapper executeRequestWithRetry(HttpUriRequest request)
             throws IOException, AIServerException {
 
