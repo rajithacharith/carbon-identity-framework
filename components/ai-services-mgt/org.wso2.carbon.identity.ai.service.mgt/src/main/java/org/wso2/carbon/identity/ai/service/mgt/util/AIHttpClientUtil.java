@@ -222,6 +222,15 @@ public class AIHttpClientUtil {
         return new HttpResponseWrapper(status, response);
     }
 
+    private static Map<String, Object> convertJsonStringToMap(String jsonString) throws AIServerException {
+
+        try {
+            return objectMapper.readValue(jsonString, Map.class);
+        } catch (IOException e) {
+            throw new AIServerException("Error occurred while parsing the JSON response from the AI service.", e);
+        }
+    }
+
     private static int readIntProperty(String key, int defaultValue) {
 
         String value = IdentityUtil.getProperty(key);
