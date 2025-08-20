@@ -98,6 +98,52 @@ public class ConsentUtilityService {
         }
     }
 
+    public void validateReceiptPIIs(ReceiptInput receiptInput, List<Purpose> purposes) throws
+            ConsentUtilityServiceException {
+
+        if (purposes == null || receiptInput == null) {
+            throw new IllegalArgumentException("Receipt Input and purposes should not be null");
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("Validating receipt against purposes.");
+        }
+        List<ReceiptServiceInput> services = receiptInput.getServices();
+        for (Purpose purpose : purposes) {
+            purpose = fillPurpose(purpose);
+            boolean purposeConsented = false;
+            Set<Integer> mandatoryPIIs = getMandatoryPIIs(purpose);
+            if (log.isDebugEnabled()) {
+                log.debug("Mandatory PIIs for purpose : " + purpose.getName() + " : " + Arrays.toString
+                        (mandatoryPIIs.toArray()));
+            }
+            for (ReceiptServiceInput service : services) {
+                List<ReceiptPurposeInput> consentPurposes = service.getPurposes();
+                for (ReceiptPurposeInput consentPurpose : consentPurposes) {
+                    if (Objects.equals(consentPurpose.getPurposeId(), purpose.getId())) {
+                        purposeConsented = true;
+                        List<PIICategoryValidity> pIICategories = consentPurpose.getPiiCategory();
+                        Set<Integer> consentedPIIs = getPIIs(pIICategories);
+
+                        if (log.isDebugEnabled()) {
+                            log.debug("Consented PIIs: " + Arrays.toString
+                                    (consentedPIIs.toArray()));
+                        }
+                        if (!consentedPIIs.containsAll(mandatoryPIIs)) {
+                            throw new ConsentUtilityServiceException("One or more mandatory attributes are missing in" +
+                                                                     " the given receipt");
+                        }
+                    }
+                }
+                if (!purposeConsented && !mandatoryPIIs.isEmpty()) {
+                    throw new ConsentUtilityServiceException("Consent receipt does not contain consent for " +
+                            "purpose " + purpose.getName() + " with ID: " + purpose.getId() + ", which has " +
+                            "mandatory PIIs");
+                }
+            }
+
+        }
+    }
+
     /**
      * If the consent is not given for a PII
      *
