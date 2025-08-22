@@ -81,4 +81,33 @@ public class SessionManagementService extends AbstractAdmin {
             return false;
         }
     }
+
+    public boolean removeMySession(String sessionId) {
+
+        if (StringUtils.isBlank(sessionId)) {
+            return false;
+        }
+        SessionContext sessionContext = FrameworkUtils.getSessionContextFromCache(sessionId,
+                FrameworkUtils.getLoginTenantDomainFromContext());
+        // Check whether the session belongs to the logged in user.
+        CarbonContext carbonContext = CarbonContext.getThreadLocalCarbonContext();
+        String username = carbonContext.getUsername();
+        // Extract the user store domain if there is any or set to 'PRIMARY'.
+        String userStoreDomain = "PRIMARY";
+        username = UserCoreUtil.removeDomainFromName(username);
+
+        AuthenticatedUser authenticatedUser = (AuthenticatedUser) sessionContext
+                .getProperty(FrameworkConstants.AUTHENTICATED_USER);
+        if (username.equals(authenticatedUser.getUserName())
+                && userStoreDomain.equals(authenticatedUser.getUserStoreDomain())
+                && carbonContext.getTenantDomain().equals(authenticatedUser.getTenantDomain())) {
+            ServerSessionManagementService serverSessionManagementService =
+                    FrameworkServiceDataHolder.getInstance().getServerSessionManagementService();
+            return serverSessionManagementService.removeSession(sessionId);
+        } else { // TODO : Handle federated scenario.
+            log.warn(String.format("Trying to terminate a session which does not belong to logged in user (%s). " +
+                    "This might be an attempt for a security breach", username));
+            return false;
+        }
+    }
 }
