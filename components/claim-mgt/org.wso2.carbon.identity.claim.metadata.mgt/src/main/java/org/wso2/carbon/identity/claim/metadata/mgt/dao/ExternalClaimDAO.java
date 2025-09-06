@@ -52,6 +52,11 @@ public class ExternalClaimDAO extends ClaimDAO {
     public List<ExternalClaim> getExternalClaims(String externalDialectURI, int tenantId) throws
             ClaimMetadataException {
 
+        if (log.isDebugEnabled()) {
+            log.debug("Fetching external claims from database for dialect: " + externalDialectURI + 
+                    " and tenant: " + tenantId);
+        }
+
         List<ExternalClaim> externalClaims = new ArrayList<>();
         Connection connection = IdentityDatabaseUtil.getDBConnection(false);
         try {
@@ -60,16 +65,27 @@ public class ExternalClaimDAO extends ClaimDAO {
         finally {
             IdentityDatabaseUtil.closeConnection(connection);
         }
+
+        if (log.isDebugEnabled()) {
+            log.debug("Fetched " + externalClaims.size() + " external claims from database for dialect: " + 
+                    externalDialectURI + " and tenant: " + tenantId);
+        }
+
         return externalClaims;
     }
 
     public void addExternalClaim(ExternalClaim externalClaim, int tenantId) throws ClaimMetadataException {
 
-        Connection connection = IdentityDatabaseUtil.getDBConnection();
-
         String externalClaimURI = externalClaim.getClaimURI();
         String externalClaimDialectURI = externalClaim.getClaimDialectURI();
         String mappedLocalClaimURI = externalClaim.getMappedLocalClaim();
+
+        if (log.isDebugEnabled()) {
+            log.debug("Adding external claim to database: " + externalClaimDialectURI + ":" + externalClaimURI + 
+                    " mapped to: " + mappedLocalClaimURI + " for tenant: " + tenantId);
+        }
+
+        Connection connection = IdentityDatabaseUtil.getDBConnection();
 
         try {
             // Start transaction
@@ -96,6 +112,12 @@ public class ExternalClaimDAO extends ClaimDAO {
             addClaimProperties(connection, externalClaimId, externalClaim.getClaimProperties(), tenantId);
             // End transaction
             connection.commit();
+
+            if (log.isDebugEnabled()) {
+                log.debug("Successfully added external claim to database: " + externalClaimDialectURI + ":" + 
+                        externalClaimURI + " for tenant: " + tenantId);
+            }
+
         } catch (SQLException e) {
             rollbackTransaction(connection);
             throw new ClaimMetadataException("Error while adding external claim " + externalClaimURI + " to " +
@@ -107,11 +129,16 @@ public class ExternalClaimDAO extends ClaimDAO {
 
     public void updateExternalClaim(ExternalClaim externalClaim, int tenantId) throws ClaimMetadataException {
 
-        Connection connection = IdentityDatabaseUtil.getDBConnection();
-
         String externalClaimURI = externalClaim.getClaimURI();
         String externalClaimDialectURI = externalClaim.getClaimDialectURI();
         String mappedLocalClaimURI = externalClaim.getMappedLocalClaim();
+
+        if (log.isDebugEnabled()) {
+            log.debug("Updating external claim in database: " + externalClaimDialectURI + ":" + externalClaimURI + 
+                    " mapped to: " + mappedLocalClaimURI + " for tenant: " + tenantId);
+        }
+
+        Connection connection = IdentityDatabaseUtil.getDBConnection();
 
         try {
             // Start transaction
@@ -131,6 +158,12 @@ public class ExternalClaimDAO extends ClaimDAO {
 
             // End transaction
             connection.commit();
+
+            if (log.isDebugEnabled()) {
+                log.debug("Successfully updated external claim in database: " + externalClaimDialectURI + ":" + 
+                        externalClaimURI + " for tenant: " + tenantId);
+            }
+
         } catch (SQLException e) {
             rollbackTransaction(connection);
             throw new ClaimMetadataException("Error while updating external claim " + externalClaimURI + " in " +
@@ -144,7 +177,17 @@ public class ExternalClaimDAO extends ClaimDAO {
     public void removeExternalClaim(String externalClaimDialectURI, String externalClaimURI, int tenantId) throws
             ClaimMetadataException {
 
+        if (log.isDebugEnabled()) {
+            log.debug("Removing external claim from database: " + externalClaimDialectURI + ":" + 
+                    externalClaimURI + " for tenant: " + tenantId);
+        }
+
         removeClaim(externalClaimDialectURI, externalClaimURI, tenantId);
+
+        if (log.isDebugEnabled()) {
+            log.debug("Successfully removed external claim from database: " + externalClaimDialectURI + ":" + 
+                    externalClaimURI + " for tenant: " + tenantId);
+        }
     }
 
     public boolean isMappedLocalClaim(String mappedLocalClaimURI, int tenantId) throws

@@ -41,6 +41,10 @@ public class ClaimDialectDAO {
 
     public List<ClaimDialect> getClaimDialects(int tenantId) throws ClaimMetadataException {
 
+        if (log.isDebugEnabled()) {
+            log.debug("Fetching claim dialects from database for tenant: " + tenantId);
+        }
+
         List<ClaimDialect> claimDialects = new ArrayList<>();
 
         Connection connection = IdentityDatabaseUtil.getDBConnection(false);
@@ -65,10 +69,19 @@ public class ClaimDialectDAO {
             IdentityDatabaseUtil.closeAllConnections(connection, rs, prepStmt);
         }
 
+        if (log.isDebugEnabled()) {
+            log.debug("Fetched " + claimDialects.size() + " claim dialects from database for tenant: " + tenantId);
+        }
+
         return claimDialects;
     }
 
     public void addClaimDialect(ClaimDialect claimDialect, int tenantId) throws ClaimMetadataException {
+
+        if (log.isDebugEnabled()) {
+            log.debug("Adding claim dialect to database: " + claimDialect.getClaimDialectURI() + 
+                    " for tenant: " + tenantId);
+        }
 
         Connection connection = IdentityDatabaseUtil.getDBConnection();
         PreparedStatement prepStmt = null;
@@ -81,6 +94,12 @@ public class ClaimDialectDAO {
             prepStmt.setInt(2, tenantId);
             prepStmt.executeUpdate();
             IdentityDatabaseUtil.commitTransaction(connection);
+
+            if (log.isDebugEnabled()) {
+                log.debug("Successfully added claim dialect to database: " + claimDialect.getClaimDialectURI() + 
+                        " for tenant: " + tenantId);
+            }
+
         } catch (SQLException e) {
             IdentityDatabaseUtil.rollbackTransaction(connection);
             throw new ClaimMetadataException("Error while adding claim dialect " + claimDialect
