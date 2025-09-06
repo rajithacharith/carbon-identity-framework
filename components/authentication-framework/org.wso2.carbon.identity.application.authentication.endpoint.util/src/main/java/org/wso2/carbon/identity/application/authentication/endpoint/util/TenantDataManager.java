@@ -77,6 +77,10 @@ public class TenantDataManager {
         InputStream inputStream = null;
         initAttempted = true;
 
+        if (log.isDebugEnabled()) {
+            log.debug("Initializing TenantDataManager");
+        }
+
         try {
             if (!initialized) {
                 prop = new Properties();
@@ -154,6 +158,7 @@ public class TenantDataManager {
                             .append(Constants.TenantConstants.TENANT_MGT_ADMIN_SERVICE_URL).toString();
 
                         initialized = true;
+                        log.info("TenantDataManager initialized successfully");
                 }
             }
 
