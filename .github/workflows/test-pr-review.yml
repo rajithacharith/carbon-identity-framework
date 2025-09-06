@@ -1,0 +1,20 @@
+name: PR Review Caller
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  call-external-endpoint:
+    runs-on: ubuntu-latest
+    env:
+      REVIEW_ENDPOINT: ${{ secrets.REVIEW_ENDPOINT }}
+      API_KEY: ${{ secrets.API_KEY }}
+
+    steps:
+      - name: Call Review Endpoint
+        run: |
+          curl --location "$REVIEW_ENDPOINT" \
+            --header 'Content-Type: application/json' \
+            --header "api-key: $API_KEY" \
+            --data '{"prUrl": "${{ github.event.pull_request.html_url }}"}'
