@@ -65,6 +65,9 @@ public enum ClaimManagerHandler {
      * @throws ClaimManagementException
      */
     public Claim[] getAllSupportedClaims() throws ClaimManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Retrieving all supported claims");
+        }
         ClaimManager claimManager;
 
         try {
@@ -81,13 +84,18 @@ public enum ClaimManagerHandler {
                 for (int i = 0; i < mappings.length; i++) {
                     claims[i] = mappings[i].getClaim();
                 }
-
+                if (log.isDebugEnabled()) {
+                    log.debug("Retrieved " + claims.length + " supported claims");
+                }
                 return claims;
             }
         } catch (org.wso2.carbon.user.api.UserStoreException e) {
             throw new ClaimManagementException("Error occurred while loading supported claims", e);
         }
 
+        if (log.isDebugEnabled()) {
+            log.debug("No supported claims found");
+        }
         return new Claim[0];
     }
 
@@ -96,6 +104,9 @@ public enum ClaimManagerHandler {
      * @throws ClaimManagementException
      */
     public ClaimMapping[] getAllSupportedClaimMappings() throws ClaimManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Retrieving all supported claim mappings");
+        }
         ClaimManager claimManager;
 
         try {
@@ -107,7 +118,11 @@ public enum ClaimManagerHandler {
                 return new ClaimMapping[0];
             }
 
-            return claimManager.getAllSupportClaimMappingsByDefault();
+            ClaimMapping[] mappings = claimManager.getAllSupportClaimMappingsByDefault();
+            if (log.isDebugEnabled()) {
+                log.debug("Retrieved " + mappings.length + " supported claim mappings");
+            }
+            return mappings;
 
         } catch (org.wso2.carbon.user.api.UserStoreException e) {
             throw new ClaimManagementException("Error occurred while loading supported claims", e);
@@ -119,6 +134,9 @@ public enum ClaimManagerHandler {
      * @throws ClaimManagementException
      */
     public ClaimMapping[] getAllClaimMappings() throws ClaimManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Retrieving all claim mappings");
+        }
         ClaimManager claimManager;
 
         try {
@@ -129,8 +147,11 @@ public enum ClaimManagerHandler {
                 // have a claims administrator.
                 return new ClaimMapping[0];
             }
-
-            return claimManager.getAllClaimMappings();
+            ClaimMapping[] mappings = claimManager.getAllClaimMappings();
+            if (log.isDebugEnabled()) {
+                log.debug("Retrieved " + mappings.length + " claim mappings");
+            }
+            return mappings;
 
         } catch (org.wso2.carbon.user.api.UserStoreException e) {
             throw new ClaimManagementException("Error occurred while loading supported claims", e);
@@ -138,7 +159,9 @@ public enum ClaimManagerHandler {
     }
 
     public ClaimMapping[] getAllClaimMappings(String tenantDomain) throws ClaimManagementException {
-
+        if (log.isDebugEnabled()) {
+            log.debug("Retrieving all claim mappings for tenant: " + tenantDomain);
+        }
         try {
             int tenantId =
                     ClaimManagementServiceComponent.getRealmService().getTenantManager().getTenantId(tenantDomain);
@@ -149,8 +172,11 @@ public enum ClaimManagerHandler {
                 // have a claims administrator.
                 return new ClaimMapping[0];
             }
-
-            return claimManager.getAllClaimMappings();
+            ClaimMapping[] mappings = claimManager.getAllClaimMappings();
+            if (log.isDebugEnabled()) {
+                log.debug("Retrieved " + mappings.length + " claim mappings for tenant: " + tenantDomain);
+            }
+            return mappings;
 
         } catch (org.wso2.carbon.user.api.UserStoreException e) {
             throw new ClaimManagementException("Error occurred while loading claims mapping for tenant "
@@ -182,6 +208,9 @@ public enum ClaimManagerHandler {
     }
 
     public ClaimMapping getClaimMapping(String claimURI) throws ClaimManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Retrieving claim mapping for claim URI: " + claimURI);
+        }
         ClaimMapping claimMapping = null;
         ClaimManager claimManager;
         try {
@@ -189,6 +218,10 @@ public enum ClaimManagerHandler {
             claimManager = realm.getClaimManager();
             if (claimManager != null) {
                 claimMapping = claimManager.getClaimMapping(claimURI);
+                if (log.isDebugEnabled()) {
+                    log.debug(claimMapping != null ? "Found claim mapping for URI: " + claimURI : 
+                             "No claim mapping found for URI: " + claimURI);
+                }
             }
         } catch (org.wso2.carbon.user.api.UserStoreException e) {
             throw new ClaimManagementException("Error occurred while retrieving claim", e);
@@ -258,6 +291,9 @@ public enum ClaimManagerHandler {
      * @throws ClaimManagementException
      */
     public void updateClaimMapping(ClaimMapping mapping) throws ClaimManagementException {
+        if (log.isDebugEnabled() && mapping != null && mapping.getClaim() != null) {
+            log.debug("Updating claim mapping for URI: " + mapping.getClaim().getClaimUri());
+        }
         ClaimManager claimManager = null;
         try {
             UserRealm realm = getRealm();
@@ -282,6 +318,9 @@ public enum ClaimManagerHandler {
                 // There can be cases - we get a request for an external user store - where we don'
                 // have a claims administrator.
                 claimManager.updateClaimMapping(mapping);
+                if (log.isDebugEnabled()) {
+                    log.debug("Successfully updated claim mapping");
+                }
             }
         } catch (org.wso2.carbon.user.api.UserStoreException e) {
             throw new ClaimManagementException("Error occurred while updating claim mapping", e);
@@ -294,6 +333,9 @@ public enum ClaimManagerHandler {
      * @throws ClaimManagementException
      */
     public void addNewClaimMapping(ClaimMapping mapping) throws ClaimManagementException {
+        if (log.isDebugEnabled() && mapping != null && mapping.getClaim() != null) {
+            log.debug("Adding new claim mapping for URI: " + mapping.getClaim().getClaimUri());
+        }
         ClaimManager claimManager = null;
         try {
             UserRealm realm = getRealm();
@@ -302,6 +344,9 @@ public enum ClaimManagerHandler {
                 // There can be cases - we get a request for an external user store - where we don'
                 // have a claims administrator.
                 claimManager.addNewClaimMapping(mapping);
+                if (log.isDebugEnabled()) {
+                    log.debug("Successfully added new claim mapping");
+                }
             }
         } catch (org.wso2.carbon.user.api.UserStoreException e) {
             throw new ClaimManagementException("Error occurred while adding new claim mapping", e);
@@ -315,6 +360,9 @@ public enum ClaimManagerHandler {
      * @throws ClaimManagementException
      */
     public void removeClaimMapping(String dialectUri, String claimUri) throws ClaimManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Removing claim mapping for dialect: " + dialectUri + ", claim URI: " + claimUri);
+        }
         ClaimMapping mapping = null;
         Claim claim = null;
         ClaimManager claimManager = null;
@@ -329,6 +377,9 @@ public enum ClaimManagerHandler {
                 claim.setDialectURI(dialectUri);
                 mapping = new ClaimMapping(claim, null);
                 claimManager.deleteClaimMapping(mapping);
+                if (log.isDebugEnabled()) {
+                    log.debug("Successfully removed claim mapping");
+                }
             }
         } catch (org.wso2.carbon.user.api.UserStoreException e) {
             throw new ClaimManagementException("Error occurred while removing new claim mapping", e);
@@ -339,6 +390,9 @@ public enum ClaimManagerHandler {
      * @param mappings
      */
     public void addNewClaimDialect(ClaimDialect mappings) throws ClaimManagementException {
+        if (log.isDebugEnabled() && mappings != null) {
+            log.debug("Adding new claim dialect: " + mappings.getDialectUri());
+        }
         ClaimMapping[] mapping;
         ClaimManager claimManager;
         claimManager = null;
@@ -349,6 +403,9 @@ public enum ClaimManagerHandler {
                 mapping = mappings.getClaimMapping();
                 for (ClaimMapping aMapping : mapping) {
                     claimManager.addNewClaimMapping(aMapping);
+                }
+                if (log.isDebugEnabled()) {
+                    log.debug("Successfully added new claim dialect with " + mapping.length + " mappings");
                 }
             }
         } catch (org.wso2.carbon.user.api.UserStoreException e) {
@@ -361,6 +418,9 @@ public enum ClaimManagerHandler {
      * @throws ClaimManagementException
      */
     public void removeClaimDialect(String dialectUri) throws ClaimManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Removing claim dialect: " + dialectUri);
+        }
         ClaimMapping[] mapping;
         ClaimManager claimManager;
         try {
@@ -371,6 +431,9 @@ public enum ClaimManagerHandler {
                 if (mapping != null) {
                     for (ClaimMapping aMapping : mapping) {
                         claimManager.deleteClaimMapping(aMapping);
+                    }
+                    if (log.isDebugEnabled()) {
+                        log.debug("Successfully removed claim dialect with " + mapping.length + " mappings");
                     }
                 }
             }

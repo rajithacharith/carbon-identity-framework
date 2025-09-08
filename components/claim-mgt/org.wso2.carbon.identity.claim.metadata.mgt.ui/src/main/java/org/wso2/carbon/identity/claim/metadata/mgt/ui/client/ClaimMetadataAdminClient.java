@@ -49,52 +49,79 @@ public class ClaimMetadataAdminClient {
     public ClaimMetadataAdminClient(String cookie, String backendServerURL, ConfigurationContext configCtx) throws
             AxisFault {
 
+        if (log.isDebugEnabled()) {
+            log.debug("Initializing ClaimMetadataAdminClient with backend server URL: " + backendServerURL);
+        }
         String serviceURL = backendServerURL + "ClaimMetadataManagementService";
         stub = new ClaimMetadataManagementServiceStub(configCtx, serviceURL);
         ServiceClient client = stub._getServiceClient();
         Options option = client.getOptions();
         option.setManageSession(true);
         option.setProperty(org.apache.axis2.transport.http.HTTPConstants.COOKIE_STRING, cookie);
+        if (log.isDebugEnabled()) {
+            log.debug("ClaimMetadataAdminClient initialized successfully");
+        }
     }
 
 
     public ClaimDialectDTO[] getClaimDialects() throws RemoteException,
             ClaimMetadataManagementServiceClaimMetadataException {
+        if (log.isDebugEnabled()) {
+            log.debug("Retrieving claim dialects");
+        }
         try {
-            return stub.getClaimDialects();
+            ClaimDialectDTO[] claimDialects = stub.getClaimDialects();
+            if (log.isDebugEnabled()) {
+                log.debug("Retrieved " + (claimDialects != null ? claimDialects.length : 0) + " claim dialects");
+            }
+            return claimDialects;
         } catch (RemoteException e) {
-            log.error(e.getMessage(), e);
+            log.error("Failed to retrieve claim dialects due to remote exception: " + e.getMessage(), e);
             throw e;
         } catch (ClaimMetadataManagementServiceClaimMetadataException e) {
-            log.error(e.getMessage(), e);
+            log.error("Failed to retrieve claim dialects: " + e.getMessage(), e);
             throw e;
         }
     }
 
     public void addClaimDialect(ClaimDialectDTO externalClaimDialect) throws RemoteException,
             ClaimMetadataManagementServiceClaimMetadataException {
+        if (log.isDebugEnabled()) {
+            log.debug("Adding claim dialect: " + (externalClaimDialect != null ? 
+                    externalClaimDialect.getClaimDialectURI() : "null"));
+        }
         try {
             stub.addClaimDialect(externalClaimDialect);
+            if (log.isDebugEnabled()) {
+                log.debug("Successfully added claim dialect: " + (externalClaimDialect != null ? 
+                        externalClaimDialect.getClaimDialectURI() : "null"));
+            }
         } catch (RemoteException e) {
-            log.error(e.getMessage(), e);
+            log.error("Failed to add claim dialect due to remote exception: " + e.getMessage(), e);
             throw e;
         } catch (ClaimMetadataManagementServiceClaimMetadataException e) {
-            log.error(e.getMessage(), e);
+            log.error("Failed to add claim dialect: " + e.getMessage(), e);
             throw e;
         }
     }
 
     public void removeClaimDialect(String externalClaimDialect) throws RemoteException,
             ClaimMetadataManagementServiceClaimMetadataException {
+        if (log.isDebugEnabled()) {
+            log.debug("Removing claim dialect: " + externalClaimDialect);
+        }
         try {
             ClaimDialectDTO claimDialect = new ClaimDialectDTO();
             claimDialect.setClaimDialectURI(externalClaimDialect);
             stub.removeClaimDialect(claimDialect);
+            if (log.isDebugEnabled()) {
+                log.debug("Successfully removed claim dialect: " + externalClaimDialect);
+            }
         } catch (RemoteException e) {
-            log.error(e.getMessage(), e);
+            log.error("Failed to remove claim dialect due to remote exception: " + e.getMessage(), e);
             throw e;
         } catch (ClaimMetadataManagementServiceClaimMetadataException e) {
-            log.error(e.getMessage(), e);
+            log.error("Failed to remove claim dialect: " + e.getMessage(), e);
             throw e;
         }
     }
@@ -102,27 +129,41 @@ public class ClaimMetadataAdminClient {
 
     public LocalClaimDTO[] getLocalClaims() throws RemoteException,
             ClaimMetadataManagementServiceClaimMetadataException {
+        if (log.isDebugEnabled()) {
+            log.debug("Retrieving local claims");
+        }
         try {
-            return stub.getLocalClaims();
+            LocalClaimDTO[] localClaims = stub.getLocalClaims();
+            if (log.isDebugEnabled()) {
+                log.debug("Retrieved " + (localClaims != null ? localClaims.length : 0) + " local claims");
+            }
+            return localClaims;
         } catch (RemoteException e) {
-            log.error(e.getMessage(), e);
+            log.error("Failed to retrieve local claims due to remote exception: " + e.getMessage(), e);
             throw e;
         } catch (ClaimMetadataManagementServiceClaimMetadataException e) {
-            log.error(e.getMessage(), e);
+            log.error("Failed to retrieve local claims: " + e.getMessage(), e);
             throw e;
         }
     }
 
     public void addLocalClaim(LocalClaimDTO localCLaim) throws RemoteException,
             ClaimMetadataManagementServiceClaimMetadataException {
+        if (log.isDebugEnabled()) {
+            log.debug("Adding local claim: " + (localCLaim != null ? localCLaim.getLocalClaimURI() : "null"));
+        }
         try {
             stub.addLocalClaim(localCLaim);
+            if (log.isDebugEnabled()) {
+                log.debug("Successfully added local claim: " + (localCLaim != null ? 
+                        localCLaim.getLocalClaimURI() : "null"));
+            }
         } catch (RemoteException e) {
-            log.error(e.getMessage(), e);
+            log.error("Failed to add local claim due to remote exception: " + e.getMessage(), e);
             throw e;
         } catch (ClaimMetadataManagementServiceClaimMetadataException e) {
             if (log.isDebugEnabled()) {
-                log.debug(e.getMessage(), e);
+                log.debug("Failed to add local claim: " + e.getMessage(), e);
             }
             throw e;
         }
@@ -130,26 +171,39 @@ public class ClaimMetadataAdminClient {
 
     public void updateLocalClaim(LocalClaimDTO localClaim) throws RemoteException,
             ClaimMetadataManagementServiceClaimMetadataException {
+        if (log.isDebugEnabled()) {
+            log.debug("Updating local claim: " + (localClaim != null ? localClaim.getLocalClaimURI() : "null"));
+        }
         try {
             stub.updateLocalClaim(localClaim);
+            if (log.isDebugEnabled()) {
+                log.debug("Successfully updated local claim: " + (localClaim != null ? 
+                        localClaim.getLocalClaimURI() : "null"));
+            }
         } catch (RemoteException e) {
-            log.error(e.getMessage(), e);
+            log.error("Failed to update local claim due to remote exception: " + e.getMessage(), e);
             throw e;
         } catch (ClaimMetadataManagementServiceClaimMetadataException e) {
-            log.error(e.getMessage(), e);
+            log.error("Failed to update local claim: " + e.getMessage(), e);
             throw e;
         }
     }
 
     public void removeLocalClaim(String localCLaimURI) throws RemoteException,
             ClaimMetadataManagementServiceClaimMetadataException {
+        if (log.isDebugEnabled()) {
+            log.debug("Removing local claim: " + localCLaimURI);
+        }
         try {
             stub.removeLocalClaim(localCLaimURI);
+            if (log.isDebugEnabled()) {
+                log.debug("Successfully removed local claim: " + localCLaimURI);
+            }
         } catch (RemoteException e) {
-            log.error(e.getMessage(), e);
+            log.error("Failed to remove local claim due to remote exception: " + e.getMessage(), e);
             throw e;
         } catch (ClaimMetadataManagementServiceClaimMetadataException e) {
-            log.error(e.getMessage(), e);
+            log.error("Failed to remove local claim: " + e.getMessage(), e);
             throw e;
         }
     }
@@ -157,27 +211,43 @@ public class ClaimMetadataAdminClient {
 
     public ExternalClaimDTO[] getExternalClaims(String externalClaimDialectURI) throws RemoteException,
             ClaimMetadataManagementServiceClaimMetadataException {
+        if (log.isDebugEnabled()) {
+            log.debug("Retrieving external claims for dialect: " + externalClaimDialectURI);
+        }
         try {
-            return stub.getExternalClaims(externalClaimDialectURI);
+            ExternalClaimDTO[] externalClaims = stub.getExternalClaims(externalClaimDialectURI);
+            if (log.isDebugEnabled()) {
+                log.debug("Retrieved " + (externalClaims != null ? externalClaims.length : 0) + 
+                        " external claims for dialect: " + externalClaimDialectURI);
+            }
+            return externalClaims;
         } catch (RemoteException e) {
-            log.error(e.getMessage(), e);
+            log.error("Failed to retrieve external claims due to remote exception: " + e.getMessage(), e);
             throw e;
         } catch (ClaimMetadataManagementServiceClaimMetadataException e) {
-            log.error(e.getMessage(), e);
+            log.error("Failed to retrieve external claims: " + e.getMessage(), e);
             throw e;
         }
     }
 
     public void addExternalClaim(ExternalClaimDTO externalClaim) throws RemoteException,
             ClaimMetadataManagementServiceClaimMetadataException {
+        if (log.isDebugEnabled()) {
+            log.debug("Adding external claim: " + (externalClaim != null ? externalClaim.getExternalClaimURI() : 
+                    "null"));
+        }
         try {
             stub.addExternalClaim(externalClaim);
+            if (log.isDebugEnabled()) {
+                log.debug("Successfully added external claim: " + (externalClaim != null ? 
+                        externalClaim.getExternalClaimURI() : "null"));
+            }
         } catch (RemoteException e) {
-            log.error(e.getMessage(), e);
+            log.error("Failed to add external claim due to remote exception: " + e.getMessage(), e);
             throw e;
         } catch (ClaimMetadataManagementServiceClaimMetadataException e) {
             if (log.isDebugEnabled()) {
-                log.debug(e.getMessage(), e);
+                log.debug("Failed to add external claim: " + e.getMessage(), e);
             }
             throw e;
         }
@@ -185,26 +255,42 @@ public class ClaimMetadataAdminClient {
 
     public void updateExternalClaim(ExternalClaimDTO externalClaim) throws RemoteException,
             ClaimMetadataManagementServiceClaimMetadataException {
+        if (log.isDebugEnabled()) {
+            log.debug("Updating external claim: " + (externalClaim != null ? 
+                    externalClaim.getExternalClaimURI() : "null"));
+        }
         try {
             stub.updateExternalClaim(externalClaim);
+            if (log.isDebugEnabled()) {
+                log.debug("Successfully updated external claim: " + (externalClaim != null ? 
+                        externalClaim.getExternalClaimURI() : "null"));
+            }
         } catch (RemoteException e) {
-            log.error(e.getMessage(), e);
+            log.error("Failed to update external claim due to remote exception: " + e.getMessage(), e);
             throw e;
         } catch (ClaimMetadataManagementServiceClaimMetadataException e) {
-            log.error(e.getMessage(), e);
+            log.error("Failed to update external claim: " + e.getMessage(), e);
             throw e;
         }
     }
 
     public void removeExternalClaim(String externalClaimDialectURI, String externalClaimURI) throws RemoteException,
             ClaimMetadataManagementServiceClaimMetadataException {
+        if (log.isDebugEnabled()) {
+            log.debug("Removing external claim: " + externalClaimURI + " from dialect: " + 
+                    externalClaimDialectURI);
+        }
         try {
             stub.removeExternalClaim(externalClaimDialectURI, externalClaimURI);
+            if (log.isDebugEnabled()) {
+                log.debug("Successfully removed external claim: " + externalClaimURI + " from dialect: " + 
+                        externalClaimDialectURI);
+            }
         } catch (RemoteException e) {
-            log.error(e.getMessage(), e);
+            log.error("Failed to remove external claim due to remote exception: " + e.getMessage(), e);
             throw e;
         } catch (ClaimMetadataManagementServiceClaimMetadataException e) {
-            log.error(e.getMessage(), e);
+            log.error("Failed to remove external claim: " + e.getMessage(), e);
             throw e;
         }
     }
