@@ -151,6 +151,50 @@ public class APIResourceManagerImpl implements APIResourceManager {
     }
 
     @Override
+    public APIResource addAPIResource(APIResource apiResource, String tenantDomain)
+            throws APIResourceMgtException {
+
+        try {
+            /*
+            Restrict API resource creation for organizations.
+            Check whether the tenant is an organization and return a client error if it is.
+            */
+            if (OrganizationManagementUtil.isOrganization(tenantDomain)) {
+                throw APIResourceManagementUtil.handleClientException(
+                        APIResourceManagementConstants.ErrorMessages.ERROR_CODE_CREATION_RESTRICTED);
+            }
+
+            if (StringUtils.isBlank(apiResource.getIdentifier())) {
+                throw APIResourceManagementUtil.handleClientException(
+                        APIResourceManagementConstants.ErrorMessages.ERROR_CODE_INVALID_IDENTIFIER_VALUE);
+            }
+
+            APIResourceManagerEventPublisherProxy publisherProxy = APIResourceManagerEventPublisherProxy.getInstance();
+            publisherProxy.publishPreAddAPIResourceWithException(apiResource, tenantDomain);
+
+            // Check whether the API resource already exists. This is being handled in the service layer since the
+            // system APIs are registered in the database in a tenant-agnostic manner.
+            if (getAPIResourceByIdentifier(apiResource.getIdentifier(), tenantDomain) != null) {
+                throw APIResourceManagementUtil.handleClientException(APIResourceManagementConstants
+                        .ErrorMessages.ERROR_CODE_API_RESOURCE_ALREADY_EXISTS, tenantDomain);
+            }
+
+            int tenantId = IdentityTenantUtil.getTenantId(tenantDomain);
+            // If the API resource is a system API, set the tenant id to 0 since they are not tenant specific.
+            if (APIResourceManagementUtil.isSystemAPI(apiResource.getType())) {
+                tenantId = 0;
+            }
+
+            APIResource apiResourceCreated = CACHE_BACKED_DAO.addAPIResource(apiResource, tenantId);
+            publisherProxy.publishPostAddAPIResource(apiResource, tenantDomain);
+            return apiResourceCreated;
+        } catch (OrganizationManagementException e) {
+            throw APIResourceManagementUtil.handleServerException(
+                    APIResourceManagementConstants.ErrorMessages.ERROR_CODE_ERROR_WHILE_ADDING_API_RESOURCE, e);
+        }
+    }
+
+    @Override
     public void deleteAPIResourceById(String apiResourceId, String tenantDomain) throws APIResourceMgtException {
 
         APIResourceManagerEventPublisherProxy publisherProxy = APIResourceManagerEventPublisherProxy.getInstance();
